@@ -35,10 +35,10 @@ const Navbar: React.FC = () => {
             <div className="max-w-7xl mx-auto flex items-center justify-between">
               <Link 
                 to="/" 
-                className="font-serif text-2xl tracking-tight text-charcoal"
+                className="font-serif text-2xl tracking-tight text-charcoal group"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Aditya Vishwakarma.
+                Aditya <span className="text-moss font-instrument italic font-normal">Vishwakarma</span>
               </Link>
               
               <button 
