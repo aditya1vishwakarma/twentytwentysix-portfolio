@@ -1,9 +1,13 @@
+
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion as motionComponent } from 'framer-motion';
 import Hero from '../components/Sections/Hero';
 import About from '../components/Sections/About';
 import WorkCarousel from '../components/Sections/WorkCarousel';
-import MoodBoard from '../components/Sections/MoodBoard';
+import BlogPreview from '../components/Sections/BlogPreview';
+
+// Fix: Cast motion to any to resolve property existence type errors
+const motion = motionComponent as any;
 
 const Home: React.FC = () => {
   return (
@@ -16,7 +20,7 @@ const Home: React.FC = () => {
       <Hero />
       <About />
       <WorkCarousel />
-      <MoodBoard />
+      <BlogPreview />
     </motion.main>
   );
 };

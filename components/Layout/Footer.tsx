@@ -9,9 +9,9 @@ const Footer: React.FC = () => {
         
         <div className="md:col-span-4 flex flex-col justify-between h-full">
           <div>
-            <h2 className="font-serif text-3xl mb-4">Let's create together.</h2>
+            <h2 className="font-serif text-3xl mb-4">Feel free to reach out!</h2>
             <p className="text-charcoal/60 text-lg">
-              Open for collaborations and new opportunities.
+              I'm always open for collaboration and new opportunities :)
             </p>
           </div>
         </div>
@@ -39,8 +39,8 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="md:col-span-12 mt-16 pt-8 border-t border-charcoal/5 flex flex-col md:flex-row justify-between items-center text-sm text-charcoal/40">
-          <p>&copy; {new Date().getFullYear()} Lumière. All rights reserved.</p>
-          <p>Designed with Swiss Precision.</p>
+          <p>Designed by Aditya, Built by Gemini</p>
+          <p> California {new Date().getFullYear()}</p>
         </div>
       </div>
     </footer>

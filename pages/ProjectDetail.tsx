@@ -1,12 +1,17 @@
+
 import React from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import * as ReactRouterDOM from 'react-router-dom';
+import { motion as motionComponent } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { PROJECTS } from '../constants';
 import Button from '../components/UI/Button';
+import OptimizedImage from '../components/UI/OptimizedImage';
+
+const { useParams, Link, useNavigate } = ReactRouterDOM as any;
+const motion = motionComponent as any;
 
 const ProjectDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
   const navigate = useNavigate();
   const project = PROJECTS.find(p => p.id === id);
 
@@ -27,9 +32,9 @@ const ProjectDetail: React.FC = () => {
       transition={{ duration: 0.6 }}
       className="pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto"
     >
-      <Link to="/" className="inline-flex items-center gap-2 text-charcoal/60 hover:text-moss mb-8 transition-colors">
+      <Link to="/works" className="inline-flex items-center gap-2 text-charcoal/60 hover:text-moss mb-8 transition-colors">
         <ArrowLeft size={20} />
-        <span className="uppercase tracking-widest text-sm">Back to Works</span>
+        <span className="uppercase tracking-widest text-sm font-sans">Back to Works</span>
       </Link>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
@@ -42,7 +47,7 @@ const ProjectDetail: React.FC = () => {
           >
             {project.title}
           </motion.h1>
-          <div className="flex flex-wrap gap-6 text-sm text-charcoal/60">
+          <div className="flex flex-wrap gap-6 text-sm text-charcoal/60 font-sans uppercase tracking-widest">
             <span>{project.category}</span>
             <span>•</span>
             <span>{project.date}</span>
@@ -53,13 +58,19 @@ const ProjectDetail: React.FC = () => {
       </div>
 
       <div className="relative w-full aspect-video rounded-squircle overflow-hidden mb-16 shadow-xl shadow-moss/10">
-        <img src={project.imageUrl} alt={project.title} className="w-full h-full object-cover" />
+        <OptimizedImage 
+          src={project.imageUrl} 
+          alt={project.title} 
+          priority={true}
+          aspectRatio="aspect-auto"
+          className="w-full h-full"
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
         <div className="md:col-span-4">
           <h3 className="font-serif text-2xl mb-4 text-moss">The Challenge</h3>
-          <p className="text-charcoal/70 leading-relaxed">
+          <p className="text-charcoal/70 leading-relaxed font-sans">
             Every project begins with a unique set of constraints and aspirations. 
             For {project.title}, the goal was to harmonize function with the specific aesthetic 
             demands of the environment.
@@ -67,10 +78,10 @@ const ProjectDetail: React.FC = () => {
         </div>
         <div className="md:col-span-8">
           <h3 className="font-serif text-2xl mb-4 text-moss">The Solution</h3>
-          <p className="text-xl leading-relaxed text-charcoal/90 mb-6">
+          <p className="text-xl leading-relaxed text-charcoal/90 mb-6 font-sans">
             {project.fullDescription}
           </p>
-          <p className="text-charcoal/70 leading-relaxed">
+          <p className="text-charcoal/70 leading-relaxed font-sans">
             By leveraging a grid-based approach and focusing on typographic hierarchy, 
             we achieved a result that stands the test of time. The interactions were kept subtle 
             to ensure the content remained the hero, aligning with our philosophy of sophistication through simplicity.
@@ -79,7 +90,7 @@ const ProjectDetail: React.FC = () => {
       </div>
 
       <div className="mt-24 pt-12 border-t border-charcoal/10 flex justify-between items-center">
-        <div className="text-charcoal/50 text-sm">Next Project</div>
+        <div className="text-charcoal/50 text-sm uppercase tracking-widest font-sans">Next Project</div>
         <Button onClick={() => {
           const nextId = String((parseInt(project.id) % PROJECTS.length) + 1);
           navigate(`/project/${nextId}`);

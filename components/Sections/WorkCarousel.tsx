@@ -1,9 +1,14 @@
+
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion as motionComponent, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import { PROJECTS } from '../../constants';
 import Button from '../UI/Button';
+import OptimizedImage from '../UI/OptimizedImage';
+
+const { useNavigate } = ReactRouterDOM as any;
+const motion = motionComponent as any;
 
 const WorkCarousel: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -46,36 +51,40 @@ const WorkCarousel: React.FC = () => {
 
         <div className="relative w-full aspect-[4/3] md:aspect-[21/9] rounded-squircle overflow-hidden group cursor-pointer" onClick={handleProjectClick}>
           <AnimatePresence mode="wait">
-            <motion.img
+            <motion.div
               key={PROJECTS[currentIndex].imageUrl}
-              src={PROJECTS[currentIndex].imageUrl}
-              alt={PROJECTS[currentIndex].title}
-              initial={{ opacity: 0, scale: 1.1 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="absolute inset-0 w-full h-full object-cover"
-            />
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0"
+            >
+              <OptimizedImage 
+                src={PROJECTS[currentIndex].imageUrl} 
+                alt={PROJECTS[currentIndex].title}
+                aspectRatio="aspect-auto"
+                className="w-full h-full"
+              />
+            </motion.div>
           </AnimatePresence>
           
-          {/* Overlay Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80 pointer-events-none" />
 
-          {/* Text Content */}
-          <div className="absolute bottom-0 left-0 p-8 md:p-16 w-full md:w-2/3 text-white">
+          <div className="absolute bottom-0 left-0 p-8 md:p-16 w-full md:w-2/3 text-white pointer-events-none">
             <motion.div
               key={PROJECTS[currentIndex].id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
+              className="pointer-events-auto"
             >
-              <span className="uppercase tracking-widest text-sm text-white/80 mb-2 block">
+              <span className="uppercase tracking-widest text-sm text-white/80 mb-2 block font-sans">
                 {PROJECTS[currentIndex].category}
               </span>
               <h3 className="font-serif text-4xl md:text-6xl mb-4">
                 {PROJECTS[currentIndex].title}
               </h3>
-              <p className="text-white/80 text-lg md:text-xl max-w-lg mb-8 line-clamp-2 md:line-clamp-none">
+              <p className="text-white/80 text-lg md:text-xl max-w-lg mb-8 line-clamp-2 md:line-clamp-none font-sans">
                 {PROJECTS[currentIndex].description}
               </p>
               
@@ -84,22 +93,6 @@ const WorkCarousel: React.FC = () => {
               </Button>
             </motion.div>
           </div>
-        </div>
-
-        {/* Mobile Controls */}
-        <div className="flex md:hidden justify-center gap-6 mt-8">
-           <button 
-              onClick={handlePrev} 
-              className="p-3 rounded-full border border-charcoal/20 hover:bg-charcoal hover:text-white transition-all duration-300"
-            >
-              <ArrowLeft size={20} />
-            </button>
-            <button 
-              onClick={handleNext} 
-              className="p-3 rounded-full border border-charcoal/20 hover:bg-charcoal hover:text-white transition-all duration-300"
-            >
-              <ArrowRight size={20} />
-            </button>
         </div>
       </div>
     </section>

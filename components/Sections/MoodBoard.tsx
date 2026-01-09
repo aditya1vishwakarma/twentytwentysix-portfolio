@@ -1,6 +1,10 @@
+
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion as motionComponent } from 'framer-motion';
 import { MOOD_BOARD } from '../../constants';
+
+// Fix: Cast motion to any to resolve property existence type errors
+const motion = motionComponent as any;
 
 const MoodBoard: React.FC = () => {
   return (

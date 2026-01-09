@@ -1,54 +1,84 @@
+
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion as motionComponent } from 'framer-motion';
+import * as ReactRouterDOM from 'react-router-dom';
+import { ArrowUpRight } from 'lucide-react';
+
+// Fix: Cast imports to any to resolve environment-specific type errors
+const { Link } = ReactRouterDOM as any;
+const motion = motionComponent as any;
 
 const About: React.FC = () => {
   return (
     <section id="about" className="py-24 md:py-32 px-6 md:px-12 bg-background">
-      <div className="max-w-7xl mx-auto border-t border-charcoal/10 pt-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24">
+      <div className="max-w-7xl mx-auto border-t border-charcoal/10 pt-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
           
-          {/* Left Column */}
+          {/* Left Column: Intro - Removed sticky behavior to prevent overlapping */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="md:sticky md:top-32 h-fit"
+            className="lg:col-span-5"
           >
-            <h2 className="font-serif text-5xl md:text-6xl text-charcoal mb-6">About Me</h2>
-            <div className="w-16 h-1 bg-moss mb-8" />
-            <p className="text-xl leading-relaxed text-charcoal/70">
-              I am a multidisciplinary product manager with a deep appreciation for design. Especially bridging the natural world and technology. 
-              My work bridges the gap between organic beauty and digital precision, adhering to the principles of Swiss design—clean, legible, and objective.
+            {/* Heading forced to one line using whitespace-nowrap and clamp for fluid sizing */}
+            <h2 className="font-serif text-[clamp(2.5rem,7vw,4.5rem)] text-charcoal mb-6 leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
+              About <span className="text-moss font-instrument italic font-normal">Aditya</span>
+            </h2>
+            <div className="w-16 h-[1px] bg-moss mb-8" />
+            <p className="text-xl leading-relaxed text-charcoal/70 max-w-md">
+              A multidisciplinary APM bridging functionality with aesthetics that impacts high-growth digital strategy. I grew up in Cupertino, CA and am Based in San Francisco, creating at the intersection of art and technology.
             </p>
           </motion.div>
 
-          {/* Right Column */}
-          <div className="flex flex-col gap-12 justify-center">
+          {/* Right Column: Grid of Cards */}
+          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
             {[
               {
-                title: "Philosophy",
-                content: "I believe design should be invisible until it needs to be seen. Like nature, it should function effortlessly and provide a sense of calm amidst chaos."
+                title: "My approach to the \"how\"",
+                content: "Rooted in the invisible. I believe design should function effortlessly like a natural ecosystem—providing calm and clarity amidst the chaos of complex data and high-velocity growth.",
+                span: "col-span-1"
               },
               {
-                title: "Methodology",
-                content: "My process is rooted in grid systems and typographic hierarchy. I strip away the non-essential to reveal the core message, ensuring every pixel serves a purpose."
+                title: "My approach to the \"what\"",
+                content: "Stripping away the noise to reveal the core intent. My methodology utilizes strict grid systems and typographic hierarchy to build products that are as performant as they are beautiful.",
+                span: "col-span-1"
               },
               {
-                title: "Toolbox",
-                content: "From TypeScript and React to Cinema 4D and Figma, I utilize a modern tech stack to bring sophisticated visions to life with performance and accessibility in mind."
+                title: "Mood Board",
+                content: "", 
+                isLink: true,
+                path: "/moodboard",
+                span: "sm:col-span-2"
               }
             ].map((item, index) => (
               <motion.div 
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.2, duration: 0.8 }}
-                className="group p-8 border border-charcoal/10 hover:border-moss/30 rounded-squircle transition-colors duration-300 bg-white/50 hover:bg-white"
+                transition={{ delay: index * 0.1, duration: 0.6 }}
+                className={`group p-8 border border-charcoal/10 hover:border-moss/30 rounded-squircle transition-all duration-500 flex flex-col justify-between ${item.span} ${item.isLink ? 'bg-moss text-white border-none' : 'bg-white/50 hover:bg-white shadow-sm'}`}
               >
-                <h3 className="text-2xl font-serif text-moss mb-3">{item.title}</h3>
-                <p className="text-charcoal/70 leading-relaxed">{item.content}</p>
+                <div>
+                  <h3 className={`text-xl font-serif mb-3 ${item.isLink ? 'text-white/90 text-2xl' : 'text-moss'}`}>
+                    {item.title}
+                  </h3>
+                  {item.content && (
+                    <p className="text-charcoal/60 leading-relaxed text-sm group-hover:text-charcoal transition-colors">
+                      {item.content}
+                    </p>
+                  )}
+                </div>
+                {item.isLink && (
+                  <Link 
+                    to={item.path} 
+                    className="mt-8 inline-flex items-center gap-3 text-white font-bold text-xs uppercase tracking-[0.2em] group-hover:gap-5 transition-all"
+                  >
+                    What inspires me <ArrowUpRight size={16} />
+                  </Link>
+                )}
               </motion.div>
             ))}
           </div>

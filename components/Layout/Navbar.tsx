@@ -1,30 +1,45 @@
+
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion as motionComponent, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
+
+// Fix: Cast imports to any to resolve environment-specific type errors
+const { Link, useLocation } = ReactRouterDOM as any;
+const motion = motionComponent as any;
 
 const Navbar: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
-      // Show navbar after scrolling 75% of window height
+      // Navbar is always visible on subpages, but only shows on scroll on Home
+      const isHome = location.pathname === '/';
+      if (!isHome) {
+        setIsVisible(true);
+        return;
+      }
       const threshold = window.innerHeight * 0.75;
       setIsVisible(window.scrollY > threshold);
     };
 
+    handleScroll(); // Initial check
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [location.pathname]);
 
-  // If menu is open, always show navbar logic or overlay
-  const showNav = isVisible || isMenuOpen;
+  const navItems = [
+    { label: 'Home', path: '/' },
+    { label: 'Works', path: '/works' },
+    { label: 'Blog', path: '/blog' },
+  ];
 
   return (
     <>
       <AnimatePresence>
-        {showNav && (
+        {(isVisible || isMenuOpen) && (
           <motion.nav
             initial={{ y: -100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -35,7 +50,7 @@ const Navbar: React.FC = () => {
             <div className="max-w-7xl mx-auto flex items-center justify-between">
               <Link 
                 to="/" 
-                className="font-serif text-2xl tracking-tight text-charcoal group"
+                className="font-serif text-xl md:text-2xl tracking-tight text-charcoal group whitespace-nowrap"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Aditya <span className="text-moss font-instrument italic font-normal">Vishwakarma</span>
@@ -53,7 +68,6 @@ const Navbar: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Full screen menu overlay */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
@@ -62,17 +76,20 @@ const Navbar: React.FC = () => {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-40 bg-background flex flex-col items-center justify-center"
           >
-            <div className="flex flex-col gap-8 text-center">
-              {['About', 'Works', 'Mood Board', 'Contact'].map((item) => (
-                <a
-                  key={item}
-                  href={`#${item.toLowerCase().replace(' ', '-')}`}
-                  className="font-serif text-4xl md:text-5xl text-charcoal hover:text-moss transition-colors duration-300"
+            <div className="flex flex-col gap-8 text-center px-6">
+              {navItems.map((item) => (
+                <Link
+                  key={item.label}
+                  to={item.path}
+                  className="font-serif text-5xl md:text-7xl text-charcoal hover:text-moss transition-all duration-300"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {item}
-                </a>
+                  {item.label}
+                </Link>
               ))}
+              <div className="mt-8 flex gap-6 justify-center">
+                 <a href="#contact" onClick={() => setIsMenuOpen(false)} className="text-sm uppercase tracking-widest text-charcoal/40 hover:text-moss transition-colors">Contact</a>
+              </div>
             </div>
           </motion.div>
         )}

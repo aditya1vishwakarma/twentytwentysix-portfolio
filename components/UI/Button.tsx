@@ -1,5 +1,9 @@
+
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion as motionComponent } from 'framer-motion';
+
+// Fix: Cast motion to any to resolve property existence type errors
+const motion = motionComponent as any;
 
 interface ButtonProps {
   children: React.ReactNode;

@@ -9,14 +9,27 @@ export interface Project {
   role: string;
 }
 
-export interface MoodItem {
+export interface BlogPost {
   id: string;
   title: string;
-  imageUrl: string;
-  tags: string[];
+  date: string;
+  readTime: string;
+  excerpt: string;
+  category: string;
+  path: string; // The URL path for this specific component
+  // Fix: Added content property to support generic blog post rendering
+  content: string;
 }
 
 export interface NavItem {
   label: string;
   href: string;
+}
+
+export interface MoodBoardItem {
+  id: string;
+  title: string;
+  imageUrl: string;
+  tags: string[];
+  description: string;
 }
