@@ -1,3 +1,4 @@
+
 export interface Project {
   id: string;
   title: string;
@@ -7,6 +8,7 @@ export interface Project {
   imageUrl: string;
   date: string;
   role: string;
+  path: string; // Added to match Blog structure
 }
 
 export interface BlogPost {
@@ -16,8 +18,7 @@ export interface BlogPost {
   readTime: string;
   excerpt: string;
   category: string;
-  path: string; // The URL path for this specific component
-  // Fix: Added content property to support generic blog post rendering
+  path: string;
   content: string;
 }
 

@@ -15,8 +15,8 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Navbar is always visible on subpages, but only shows on scroll on Home
       const isHome = location.pathname === '/';
+      // Navbar is always visible on subpages, but only shows on scroll on Home page
       if (!isHome) {
         setIsVisible(true);
         return;
@@ -25,7 +25,7 @@ const Navbar: React.FC = () => {
       setIsVisible(window.scrollY > threshold);
     };
 
-    handleScroll(); // Initial check
+    handleScroll();
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [location.pathname]);
@@ -36,6 +36,17 @@ const Navbar: React.FC = () => {
     { label: 'Blog', path: '/blog' },
   ];
 
+  const handleContactClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsMenuOpen(false);
+    
+    // Smoothly scroll to the global footer (present on all pages)
+    const footer = document.getElementById('contact');
+    if (footer) {
+      footer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <>
       <AnimatePresence>
@@ -44,8 +55,8 @@ const Navbar: React.FC = () => {
             initial={{ y: -100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -100, opacity: 0 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed top-0 left-0 right-0 z-50 px-6 py-4 md:px-12 md:py-6 bg-background/90 backdrop-blur-md border-b border-charcoal/5"
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed top-0 left-0 right-0 z-50 px-6 py-4 md:px-12 md:py-6 bg-background/80 backdrop-blur-xl border-b border-charcoal/5"
           >
             <div className="max-w-7xl mx-auto flex items-center justify-between">
               <Link 
@@ -56,9 +67,29 @@ const Navbar: React.FC = () => {
                 Aditya <span className="text-moss font-instrument italic font-normal">Vishwakarma</span>
               </Link>
               
+              {/* DESKTOP NAV */}
+              <div className="hidden md:flex items-center gap-10">
+                {navItems.map((item) => (
+                  <Link 
+                    key={item.label} 
+                    to={item.path} 
+                    className={`text-[10px] uppercase tracking-[0.2em] font-bold transition-colors ${location.pathname === item.path ? 'text-moss' : 'text-charcoal/40 hover:text-charcoal'}`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+                <button 
+                  onClick={handleContactClick}
+                  className="px-6 py-2 bg-charcoal text-white rounded-full text-[10px] uppercase tracking-widest font-bold hover:bg-moss transition-all active:scale-95"
+                >
+                  Contact
+                </button>
+              </div>
+
+              {/* MOBILE MENU TOGGLE */}
               <button 
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-2 hover:bg-charcoal/5 rounded-full transition-colors"
+                className="md:hidden p-2 hover:bg-charcoal/5 rounded-full transition-colors"
                 aria-label="Toggle menu"
               >
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -74,21 +105,27 @@ const Navbar: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-background flex flex-col items-center justify-center"
+            className="fixed inset-0 z-40 bg-background flex flex-col items-center justify-center md:hidden"
           >
-            <div className="flex flex-col gap-8 text-center px-6">
+            <div className="flex flex-col gap-10 text-center px-6">
               {navItems.map((item) => (
                 <Link
                   key={item.label}
                   to={item.path}
-                  className="font-serif text-5xl md:text-7xl text-charcoal hover:text-moss transition-all duration-300"
+                  className={`font-serif text-5xl transition-all duration-300 ${location.pathname === item.path ? 'text-moss' : 'text-charcoal'}`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.label}
                 </Link>
               ))}
-              <div className="mt-8 flex gap-6 justify-center">
-                 <a href="#contact" onClick={() => setIsMenuOpen(false)} className="text-sm uppercase tracking-widest text-charcoal/40 hover:text-moss transition-colors">Contact</a>
+              <div className="mt-4 flex flex-col gap-6 items-center">
+                 <div className="w-12 h-[1px] bg-charcoal/10" />
+                 <button 
+                   onClick={handleContactClick} 
+                   className="text-sm uppercase tracking-[0.3em] text-charcoal/60 hover:text-moss transition-colors font-bold"
+                 >
+                   Contact
+                 </button>
               </div>
             </div>
           </motion.div>

@@ -1,132 +1,256 @@
 
-import React, { useState } from 'react';
-import { motion as motionComponent } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
-import * as ReactRouterDOM from 'react-router-dom';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { motion as motionComponent, useMotionValue, useSpring, useVelocity, useTransform } from 'framer-motion';
 import { MOOD_BOARD } from '../constants';
+import OptimizedImage from '../components/UI/OptimizedImage';
 
-// Fix: Cast imports to any to resolve environment-specific type errors
-const { Link } = ReactRouterDOM as any;
 const motion = motionComponent as any;
 
-const MoodBoardPage: React.FC = () => {
-  return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="bg-[#FBFAF8] min-h-screen pt-32 pb-64 px-6"
-    >
-      <div className="max-w-screen-xl mx-auto">
-        <Link to="/" className="inline-flex items-center gap-2 text-charcoal/40 hover:text-moss mb-16 transition-colors group">
-          <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-          <span className="uppercase tracking-[0.2em] text-xs font-bold">Back to Home</span>
-        </Link>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Header Section */}
-          <header className="lg:col-span-4 lg:sticky lg:top-32 mb-20 lg:mb-0">
-            <h1 className="font-serif text-6xl md:text-8xl text-charcoal mb-8 leading-[0.9]">
-              Mood <br/>
-              <span className="text-moss font-instrument italic font-normal">Board</span>
-            </h1>
-            <div className="w-12 h-[1px] bg-moss/30 mb-8" />
-            <p className="text-lg text-charcoal/50 max-w-xs italic font-serif leading-relaxed">
-              A vertical cascade of architectural textures, typographic rhythms, and organic forms.
-            </p>
-            <p className="mt-6 text-xs uppercase tracking-widest text-moss/60 font-bold">
-              Scroll to unfold • Click to flip
-            </p>
-          </header>
+// Constants for the denser infinite canvas
+const CANVAS_SIZE = 10000; 
+const COLUMNS = 18; // More columns for a wider spread
+const COLUMN_WIDTH = 320; // Smaller "preview" size
+const GAP = 80; // Tighter gaps for a more cohesive "cosmos" look
+const ITEM_COUNT = 120; // Increased count to fill blank spots
 
-          {/* CASCADING STACK CONTAINER */}
-          <div className="lg:col-span-8 flex flex-col items-center gap-y-12 md:-mt-24">
-            {MOOD_BOARD.map((item, index) => (
-              <MoodCard key={item.id} item={item} index={index} />
-            ))}
-          </div>
+// Helper to generate a dense, non-overlapping masonry grid
+const generateMasonryItems = () => {
+  const items: any[] = [];
+  const colHeights = new Array(COLUMNS).fill(CANVAS_SIZE * 0.05);
+
+  for (let i = 0; i < ITEM_COUNT; i++) {
+    const baseItem = MOOD_BOARD[i % MOOD_BOARD.length];
+    const colIndex = i % COLUMNS;
+    const isPortrait = Math.random() > 0.4;
+    
+    const width = COLUMN_WIDTH;
+    const height = isPortrait ? width * 1.4 : width * 0.8;
+    
+    // Position with a slight random horizontal offset to feel "scattered" but aligned
+    const x = colIndex * (COLUMN_WIDTH + GAP) + (Math.random() * 40 - 20) + (CANVAS_SIZE - (COLUMNS * (COLUMN_WIDTH + GAP))) / 2;
+    const y = colHeights[colIndex];
+
+    // Append width parameter to Unsplash URL for high-performance previews
+    const previewUrl = `${baseItem.imageUrl.split('?')[0]}?q=80&w=600`;
+
+    items.push({
+      ...baseItem,
+      imageUrl: previewUrl,
+      id: `gallery-item-${i}`,
+      x,
+      y,
+      width,
+      height,
+      aspectRatio: isPortrait ? 'aspect-[2/3]' : 'aspect-[3/2]'
+    });
+
+    colHeights[colIndex] += height + GAP + (Math.random() * 60); 
+  }
+  return items;
+};
+
+const MoodBoardPage: React.FC = () => {
+  const galleryItems = useMemo(() => generateMasonryItems(), []);
+
+  // Raw coordinates
+  const rawX = useMotionValue(-CANVAS_SIZE / 2 + window.innerWidth / 2);
+  const rawY = useMotionValue(-CANVAS_SIZE / 2 + window.innerHeight / 2);
+  
+  // Spring-based inertia for smoothness and acceleration
+  const canvasX = useSpring(rawX, { stiffness: 120, damping: 24, restDelta: 0.1 });
+  const canvasY = useSpring(rawY, { stiffness: 120, damping: 24, restDelta: 0.1 });
+  
+  const [isDragging, setIsDragging] = useState(false);
+  const dragOrigin = useRef({ x: 0, y: 0, canvasX: 0, canvasY: 0 });
+
+  // Custom Cursor Physics
+  const cursorX = useSpring(0, { stiffness: 1000, damping: 60 });
+  const cursorY = useSpring(0, { stiffness: 1000, damping: 60 });
+  
+  // React to movement speed for cursor scaling
+  const xVelocity = useVelocity(canvasX);
+  const yVelocity = useVelocity(canvasY);
+  const totalVelocity = useTransform([xVelocity, yVelocity], ([vx, vy]: number[]) => {
+    return Math.sqrt(Math.pow(vx, 2) + Math.pow(vy, 2));
+  });
+  const cursorScale = useTransform(totalVelocity, [0, 2000], [1, 0.7]);
+  const cursorOpacity = useTransform(totalVelocity, [0, 2000], [0.1, 0.4]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      cursorX.set(e.clientX - 12);
+      cursorY.set(e.clientY - 12);
+
+      if (isDragging) {
+        const dx = e.clientX - dragOrigin.current.x;
+        const dy = e.clientY - dragOrigin.current.y;
+        rawX.set(dragOrigin.current.canvasX + dx);
+        rawY.set(dragOrigin.current.canvasY + dy);
+      }
+    };
+
+    const handleMouseUp = () => setIsDragging(false);
+
+    // Wheel/Scroll handling for all directions
+    const handleWheel = (e: WheelEvent) => {
+      // Prevents browser back/forward on trackpads
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+        e.preventDefault();
+      }
+      
+      // Update target positions (raw motion values)
+      rawX.set(rawX.get() - e.deltaX);
+      rawY.set(rawY.get() - e.deltaY);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('wheel', handleWheel);
+    };
+  }, [isDragging]);
+
+  const onMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    setIsDragging(true);
+    dragOrigin.current = {
+      x: e.clientX,
+      y: e.clientY,
+      canvasX: rawX.get(),
+      canvasY: rawY.get()
+    };
+  };
+
+  return (
+    <div 
+      className="fixed inset-0 w-screen h-screen overflow-hidden bg-background select-none cursor-none"
+      onMouseDown={onMouseDown}
+    >
+      {/* Background Mesh */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.08] z-0 overflow-hidden">
+        <div className="absolute inset-0 animate-mesh-drift">
+          <div className="absolute top-[-20%] left-[-10%] w-[100%] h-[100%] rounded-full bg-moss blur-[200px]" />
+          <div className="absolute bottom-[-20%] right-[-10%] w-[100%] h-[100%] rounded-full bg-moss blur-[200px]" />
+          <div className="absolute top-[30%] right-[15%] w-[60%] h-[60%] rounded-full bg-charcoal blur-[220px]" />
         </div>
-        
-        <footer className="mt-64 text-center border-t border-charcoal/5 pt-12">
-          <p className="text-charcoal/20 font-serif italic text-xl">End of current sequence</p>
-        </footer>
       </div>
-    </motion.div>
+
+      {/* Dynamic Custom Cursor */}
+      <motion.div 
+        style={{ x: cursorX, y: cursorY, scale: cursorScale, opacity: cursorOpacity }}
+        className="fixed top-0 left-0 w-6 h-6 pointer-events-none z-[100] hidden md:block"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="11" fill="#000000" />
+        </svg>
+      </motion.div>
+
+      {/* Infinite Canvas Container */}
+      <motion.div 
+        style={{ x: canvasX, y: canvasY, width: CANVAS_SIZE, height: CANVAS_SIZE }}
+        className="absolute top-0 left-0 pointer-events-auto"
+      >
+        {galleryItems.map((item, index) => (
+          <div 
+            key={item.id} 
+            className="absolute"
+            style={{ 
+              left: `${item.x}px`, 
+              top: `${item.y}px`,
+              width: `${item.width}px`
+            }}
+          >
+            <GalleryPlate item={item} index={index} />
+          </div>
+        ))}
+      </motion.div>
+
+      {/* Info Overlay */}
+      <div className="fixed bottom-12 left-12 pointer-events-none z-50">
+        <div className="flex flex-col gap-1">
+          <span className="text-[10px] uppercase tracking-[0.5em] text-charcoal/20 font-bold">Inspiration Archive</span>
+          <span className="text-[9px] uppercase tracking-[0.3em] text-charcoal/10 font-medium italic">Drag or Scroll to Move</span>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes mesh-drift {
+          0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+          50% { transform: translate(2%, 3%) scale(1.05) rotate(0.5deg); }
+          100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+        }
+        .animate-mesh-drift {
+          animation: mesh-drift 45s ease-in-out infinite;
+        }
+        .backface-hidden {
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+        }
+        .perspective-2000 {
+          perspective: 2000px;
+        }
+        .preserve-3d {
+          transform-style: preserve-3d;
+        }
+      `}</style>
+    </div>
   );
 };
 
-interface MoodCardProps {
-  item: any;
-  index: number;
-}
-
-const MoodCard: React.FC<MoodCardProps> = ({ item, index }) => {
+const GalleryPlate: React.FC<{ item: any; index: number }> = ({ item, index }) => {
   const [isFlipped, setIsFlipped] = useState(false);
-  
-  // Layered offsets to create the "stacked" look from the image
-  const xOffset = index % 2 === 0 ? '-15%' : '15%';
-  const rotation = index % 2 === 0 ? -3 : 3;
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 100, rotateX: 10 }}
-      whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ 
-        duration: 1.2, 
-        ease: [0.16, 1, 0.3, 1],
-        delay: index * 0.05 
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true, margin: "600px" }}
+      transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={{ 
+        scale: 1.08, 
+        zIndex: 50,
+        transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } 
       }}
-      style={{ 
-        x: xOffset, 
-        rotate: rotation,
-        zIndex: index + 1
-      } as any}
-      className="relative w-full max-w-[480px] h-[600px] perspective-1000 cursor-pointer group"
-      onClick={() => setIsFlipped(!isFlipped)}
+      className="perspective-2000 relative group"
+      onClick={(e) => {
+        e.stopPropagation();
+        setIsFlipped(!isFlipped);
+      }}
     >
-      {/* Visual Numbering/Line Detail (like reference image) */}
-      <div className={`absolute top-1/2 -translate-y-1/2 ${index % 2 === 0 ? '-left-32' : '-right-32'} hidden xl:flex items-center gap-4 text-charcoal/10`}>
-         <span className="font-serif text-3xl">0{index + 1}</span>
-         <div className="w-24 h-[1px] bg-charcoal/10" />
-      </div>
-
-      <motion.div 
-        className="relative w-full h-full preserve-3d transition-transform duration-700 ease-[0.4,0,0.2,1]"
+      <motion.div
         animate={{ rotateY: isFlipped ? 180 : 0 }}
+        transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+        className="relative preserve-3d w-full cursor-none"
       >
-        {/* FRONT: THE IMAGE */}
-        <div className="absolute inset-0 backface-hidden rounded-squircle overflow-hidden shadow-2xl shadow-charcoal/5 border-[12px] border-white">
-          <img 
-            src={item.imageUrl} 
-            alt={item.title} 
-            className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-charcoal/5 group-hover:bg-transparent transition-colors duration-500" />
-          
-          <div className="absolute bottom-8 left-8">
-             <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-charcoal/5">
-                <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-charcoal/60">0{index + 1} / Visual Note</span>
-             </div>
+        {/* FRONT */}
+        <div className="backface-hidden w-full relative">
+          <div className={`w-full bg-white transition-all duration-700 group-hover:shadow-[0_30px_90px_-20px_rgba(0,0,0,0.15)] ${item.aspectRatio}`}>
+            <OptimizedImage 
+              src={item.imageUrl} 
+              alt={item.title} 
+              aspectRatio="aspect-auto" 
+              className="w-full h-full object-cover rounded-none" 
+            />
           </div>
         </div>
 
-        {/* BACK: THE TEXT */}
+        {/* BACK */}
         <div 
-          className="absolute inset-0 backface-hidden rounded-squircle bg-charcoal flex flex-col justify-center items-center text-center p-12 border-[12px] border-white shadow-2xl"
+          className="absolute inset-0 backface-hidden bg-charcoal flex flex-col justify-between p-8 text-white shadow-2xl"
           style={{ transform: 'rotateY(180deg)' }}
         >
-          <div className="mb-8">
-            <span className="text-[10px] uppercase tracking-[0.4em] text-moss font-bold block mb-2">Intent</span>
-            <div className="w-8 h-[1px] bg-moss/40 mx-auto" />
+          <div className="flex flex-col gap-6">
+            <h3 className="font-serif text-2xl leading-tight border-b border-white/10 pb-6">{item.title}</h3>
+            <p className="text-white/40 text-xs leading-relaxed font-sans line-clamp-4">{item.description}</p>
           </div>
-          <h3 className="font-serif text-3xl text-white mb-6 leading-tight">{item.title}</h3>
-          <p className="text-white/60 text-lg leading-relaxed mb-10 italic font-serif px-4">
-            {item.description}
-          </p>
-          <div className="flex flex-wrap gap-2 justify-center max-w-[280px]">
+
+          <div className="flex flex-wrap gap-2 pt-6">
             {item.tags.map((tag: string) => (
-              <span key={tag} className="text-[9px] uppercase tracking-widest text-white/30 border border-white/10 px-3 py-1 rounded-full">
+              <span key={tag} className="text-[8px] uppercase tracking-[0.2em] text-white/30 font-bold border border-white/10 px-3 py-1.5">
                 {tag}
               </span>
             ))}

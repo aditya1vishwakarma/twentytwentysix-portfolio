@@ -23,7 +23,7 @@ const WorkCarousel: React.FC = () => {
   };
 
   const handleProjectClick = () => {
-    navigate(`/project/${PROJECTS[currentIndex].id}`);
+    navigate(PROJECTS[currentIndex].path);
   };
 
   return (

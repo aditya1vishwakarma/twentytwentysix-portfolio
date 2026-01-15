@@ -17,10 +17,8 @@ const Hero: React.FC = () => {
   const velocity = useMotionValue(0);
   const lastMousePos = useRef({ x: 0, y: 0 });
 
-  // 2. PHYSICS FOR FLUID BLOBS (Varying lag for stretching effect)
-  // Main blob follows closely
+  // 2. PHYSICS FOR FLUID BLOBS
   const springMain = { stiffness: 400, damping: 40, mass: 0.5 };
-  // Trailing blobs lag behind
   const springTrail = { stiffness: 180, damping: 25, mass: 1 };
   const springSlow = { stiffness: 100, damping: 20, mass: 1.5 };
 
@@ -33,16 +31,14 @@ const Hero: React.FC = () => {
 
   // 3. DYNAMIC PARAMETERS
   const blobScale = useTransform(velocity, [0, 2000], [1, 1.3]);
-  const blobDistortion = useTransform(velocity, [0, 2000], [20, 60]);
 
   const movementBuffer = useRef<{ x: number; y: number; time: number }[]>([]);
 
-  // Update velocity for distortion effects
   useAnimationFrame((time, delta) => {
     const currentX = mouseX.get();
     const currentY = mouseY.get();
     const dist = Math.hypot(currentX - lastMousePos.current.x, currentY - lastMousePos.current.y);
-    velocity.set((dist / delta) * 1000);
+    velocity.set((dist / (delta || 16)) * 1000);
     lastMousePos.current = { x: currentX, y: currentY };
   });
 
@@ -88,7 +84,7 @@ const Hero: React.FC = () => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* LAYER 1: BOTTOM GALLERY (REVEALED CONTENT) */}
+      {/* LAYER 1: BOTTOM GALLERY */}
       <div className="absolute inset-0 z-0 flex flex-col items-center justify-center p-12">
         <AnimatePresence>
           {isFullyRevealed && (
@@ -111,42 +107,28 @@ const Hero: React.FC = () => {
         </div>
       </div>
 
-      {/* LAYER 2: THE SVG OVERLAY (MASKING THE TOP LAYER) */}
+      {/* LAYER 2: THE SVG OVERLAY */}
       <svg className="absolute inset-0 z-10 w-full h-full pointer-events-none" preserveAspectRatio="none">
         <defs>
-          {/* THE GOOEY FILTER (Applied only to the black blobs in the mask) */}
           <filter id="goo">
             <feGaussianBlur in="SourceGraphic" stdDeviation="15" result="blur" />
             <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 25 -12" result="goo" />
           </filter>
 
-          {/* TURBULENCE (Rippling based on speed) */}
-          <filter id="distort">
-            <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" seed="2" result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="35" />
-          </filter>
-
-          {/* THE MASK: White shows the top layer, Black reveals the gallery underneath */}
           <mask id="hero-mask">
-            {/* Start with a full white rectangle (entire top layer visible) */}
             <rect x="0" y="0" width="100%" height="100%" fill="white" />
-            {/* The Blobs (Filled black to "punch a hole") */}
             <g filter="url(#goo)">
-              {/* Main Nucleus (Slightly sharper) */}
-              <motion.circle cx={smoothX} cy={smoothY} r={140} fill="black" style={{ scale: blobScale } as any} />
-              {/* Stretching tails */}
-              <motion.circle cx={trailX} cy={trailY} r={110} fill="black" />
-              <motion.circle cx={slowX} cy={slowY} r={85} fill="black" />
+              {/* FIXED: Removed extra bracket from r={80} and handled scale properly */}
+              <motion.circle cx={smoothX} cy={smoothY} r={100} fill="black" style={{ scale: blobScale }} />
+              <motion.circle cx={trailX} cy={trailY} r={80} fill="black" />
+              <motion.circle cx={slowX} cy={slowY} r={60} fill="black" />
             </g>
           </mask>
         </defs>
 
-        {/* THE TOP LAYER RECT (Using the mask above) */}
         <motion.g mask="url(#hero-mask)" animate={{ opacity: isFullyRevealed ? 0 : 1 }} transition={{ duration: 0.8 }}>
-          {/* Background of the top layer */}
           <rect x="0" y="0" width="100%" height="100%" fill="#FBFAF8" />
           
-          {/* Typography inside the SVG to ensure perfect masking alignment */}
           <foreignObject x="0" y="0" width="100%" height="100%">
             <div className="flex flex-col justify-center items-center h-full w-full text-center px-4">
               <h1 className="font-serif leading-none text-charcoal mb-4 whitespace-nowrap text-[clamp(2.5rem,8.5vw,11rem)]">
@@ -160,7 +142,6 @@ const Hero: React.FC = () => {
           </foreignObject>
         </motion.g>
         
-        {/* SUBTLE CURSOR INDICATOR (Only visible if not fully revealed) */}
         {!isFullyRevealed && isHovered && (
           <motion.circle cx={smoothX} cy={smoothY} r={4} fill="#2E4F0A" opacity="0.4" />
         )}

@@ -9,7 +9,7 @@ interface OptimizedImageProps {
   alt: string;
   className?: string;
   aspectRatio?: string;
-  priority?: boolean; // Set to true for images above the fold (Hero)
+  priority?: boolean;
 }
 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({ 
@@ -24,7 +24,6 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   return (
     <div className={`relative overflow-hidden ${aspectRatio} ${className} bg-charcoal/[0.03]`}>
-      {/* The Shimmer/Placeholder Background */}
       <AnimatePresence>
         {!isLoaded && !error && (
           <motion.div
@@ -33,20 +32,17 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
             transition={{ duration: 0.6 }}
             className="absolute inset-0 z-10"
           >
-            {/* Soft Shimmer Effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" 
-                 style={{
-                   background: 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%)',
-                   animation: 'shimmer 2s infinite'
-                 }} 
+            <div 
+              className="absolute inset-0 animate-[shimmer_2s_infinite]" 
+              style={{
+                background: 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%)',
+              }} 
             />
-            {/* Themed placeholder color */}
             <div className="w-full h-full bg-moss/5 backdrop-blur-xl" />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* The Actual Image */}
       <motion.img
         src={src}
         alt={alt}
@@ -75,6 +71,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
       <style>{`
         @keyframes shimmer {
+          0% { transform: translateX(-100%); }
           100% { transform: translateX(100%); }
         }
       `}</style>
