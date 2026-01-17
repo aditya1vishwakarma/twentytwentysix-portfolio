@@ -21,10 +21,20 @@ import BotanicalBrand from './pages/works/BotanicalBrand';
 const { HashRouter, Routes, Route, useLocation } = ReactRouterDOM as any;
 
 const ScrollToTop = () => {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   React.useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    if (!hash) {
+      window.scrollTo(0, 0);
+    } else {
+      // Small delay to ensure the Home component is mounted before scrolling
+      setTimeout(() => {
+        const el = document.getElementById(hash.slice(1));
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [pathname, hash]);
   return null;
 };
 
@@ -34,7 +44,7 @@ const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   return (
     <div className="min-h-screen bg-background text-charcoal font-sans selection:bg-moss selection:text-white overflow-x-hidden">
-      <Navbar />
+      {!isMoodBoard && <Navbar />}
       <AnimatePresence mode="wait">
         {children}
       </AnimatePresence>

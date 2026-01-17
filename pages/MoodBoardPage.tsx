@@ -1,81 +1,123 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { motion as motionComponent, useMotionValue, useSpring, useVelocity, useTransform } from 'framer-motion';
+import { motion as motionComponent, useMotionValue, useSpring, useVelocity, useTransform, AnimatePresence } from 'framer-motion';
+import * as ReactRouterDOM from 'react-router-dom';
 import { MOOD_BOARD } from '../constants';
-import OptimizedImage from '../components/UI/OptimizedImage';
 
+const { Link } = ReactRouterDOM as any;
 const motion = motionComponent as any;
 
-// Constants for the denser infinite canvas
-const CANVAS_SIZE = 10000; 
-const COLUMNS = 18; // More columns for a wider spread
-const COLUMN_WIDTH = 320; // Smaller "preview" size
-const GAP = 80; // Tighter gaps for a more cohesive "cosmos" look
-const ITEM_COUNT = 120; // Increased count to fill blank spots
+const MoodBoardPage: React.FC = () => {
+  const [loadedCount, setLoadedCount] = useState(0);
+  const [isFullyLoaded, setIsFullyLoaded] = useState(false);
+  const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+  
+  // Logic to fill with placeholders if the real MOOD_BOARD is short
+  const displayItems = useMemo(() => {
+    const items = [...MOOD_BOARD];
+    if (items.length < 30) {
+      const remaining = 30 - items.length;
+      for (let i = 0; i < remaining; i++) {
+        items.push({
+          id: `placeholder-${i}`,
+          title: 'Perspective',
+          imageUrl: `https://images.unsplash.com/photo-${1500000000000 + i}?q=80&w=800&auto=format&fit=crop`,
+          tags: ['Draft', 'Concept'],
+          description: 'A structural placeholder for the evolving archive.'
+        });
+      }
+    }
+    return items.slice(0, 50);
+  }, []);
 
-// Helper to generate a dense, non-overlapping masonry grid
-const generateMasonryItems = () => {
-  const items: any[] = [];
-  const colHeights = new Array(COLUMNS).fill(CANVAS_SIZE * 0.05);
+  const totalImages = displayItems.length;
+  const progress = totalImages > 0 ? (loadedCount / totalImages) * 100 : 100;
 
-  for (let i = 0; i < ITEM_COUNT; i++) {
-    const baseItem = MOOD_BOARD[i % MOOD_BOARD.length];
-    const colIndex = i % COLUMNS;
-    const isPortrait = Math.random() > 0.4;
-    
-    const width = COLUMN_WIDTH;
-    const height = isPortrait ? width * 1.4 : width * 0.8;
-    
-    // Position with a slight random horizontal offset to feel "scattered" but aligned
-    const x = colIndex * (COLUMN_WIDTH + GAP) + (Math.random() * 40 - 20) + (CANVAS_SIZE - (COLUMNS * (COLUMN_WIDTH + GAP))) / 2;
-    const y = colHeights[colIndex];
+  // Custom Cursor Springs
+  const cursorX = useSpring(0, { stiffness: 1000, damping: 50 });
+  const cursorY = useSpring(0, { stiffness: 1000, damping: 50 });
 
-    // Append width parameter to Unsplash URL for high-performance previews
-    const previewUrl = `${baseItem.imageUrl.split('?')[0]}?q=80&w=600`;
+  // Handle responsive resize
+  useEffect(() => {
+    const handleResize = () => setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
-    items.push({
-      ...baseItem,
-      imageUrl: previewUrl,
-      id: `gallery-item-${i}`,
-      x,
-      y,
-      width,
-      height,
-      aspectRatio: isPortrait ? 'aspect-[2/3]' : 'aspect-[3/2]'
+  // Grid Layout Calculation
+  const { galleryItems, contentWidth, contentHeight } = useMemo(() => {
+    const isMobile = windowSize.width < 768;
+    const isTablet = windowSize.width < 1024;
+    const colCount = isMobile ? 4 : isTablet ? 6 : 10;
+    const colWidth = isMobile ? 160 : isTablet ? 220 : 300;
+    const gapSize = isMobile ? 24 : isTablet ? 40 : 60;
+
+    const items: any[] = [];
+    const colHeights = new Array(colCount).fill(0).map(() => Math.random() * 100);
+
+    displayItems.forEach((baseItem, i) => {
+      const shortestColIndex = colHeights.indexOf(Math.min(...colHeights));
+      const isPortrait = (i % 3 === 0) || (i % 7 === 0);
+      const width = colWidth;
+      const height = isPortrait ? width * 1.4 : width * 0.9;
+      const x = shortestColIndex * (colWidth + gapSize);
+      const y = colHeights[shortestColIndex];
+
+      items.push({
+        ...baseItem,
+        id: baseItem.id || `gallery-item-${i}`,
+        x,
+        y,
+        width,
+        height,
+        aspectRatio: isPortrait ? 'aspect-[2/3]' : 'aspect-[16/11]'
+      });
+
+      colHeights[shortestColIndex] += height + gapSize;
     });
 
-    colHeights[colIndex] += height + GAP + (Math.random() * 60); 
-  }
-  return items;
-};
+    return { 
+      galleryItems: items, 
+      contentWidth: colCount * (colWidth + gapSize) - gapSize, 
+      contentHeight: Math.max(...colHeights) 
+    };
+  }, [windowSize.width, displayItems]);
 
-const MoodBoardPage: React.FC = () => {
-  const galleryItems = useMemo(() => generateMasonryItems(), []);
+  // Motion Values for Canvas
+  const rawX = useMotionValue(0);
+  const rawY = useMotionValue(0);
+  const canvasX = useSpring(rawX, { stiffness: 150, damping: 30 });
+  const canvasY = useSpring(rawY, { stiffness: 150, damping: 30 });
+  
+  // Loading Progress Value for Animation
+  const animatedProgress = useSpring(progress, { stiffness: 40, damping: 20 });
+  const progressVelocity = useVelocity(animatedProgress);
+  
+  // Sky to Space Mapping
+  const elevatorY = useTransform(animatedProgress, [0, 100], ['-66.6%', '0%']);
+  const motionBlur = useTransform(progressVelocity, [-100, 0, 100], ['blur(8px)', 'blur(0px)', 'blur(8px)']);
+  const spaceOpacity = useTransform(animatedProgress, [50, 100], [0, 1]);
 
-  // Raw coordinates
-  const rawX = useMotionValue(-CANVAS_SIZE / 2 + window.innerWidth / 2);
-  const rawY = useMotionValue(-CANVAS_SIZE / 2 + window.innerHeight / 2);
-  
-  // Spring-based inertia for smoothness and acceleration
-  const canvasX = useSpring(rawX, { stiffness: 120, damping: 24, restDelta: 0.1 });
-  const canvasY = useSpring(rawY, { stiffness: 120, damping: 24, restDelta: 0.1 });
-  
   const [isDragging, setIsDragging] = useState(false);
   const dragOrigin = useRef({ x: 0, y: 0, canvasX: 0, canvasY: 0 });
 
-  // Custom Cursor Physics
-  const cursorX = useSpring(0, { stiffness: 1000, damping: 60 });
-  const cursorY = useSpring(0, { stiffness: 1000, damping: 60 });
-  
-  // React to movement speed for cursor scaling
-  const xVelocity = useVelocity(canvasX);
-  const yVelocity = useVelocity(canvasY);
-  const totalVelocity = useTransform([xVelocity, yVelocity], ([vx, vy]: number[]) => {
-    return Math.sqrt(Math.pow(vx, 2) + Math.pow(vy, 2));
-  });
-  const cursorScale = useTransform(totalVelocity, [0, 2000], [1, 0.7]);
-  const cursorOpacity = useTransform(totalVelocity, [0, 2000], [0.1, 0.4]);
+  // Center canvas on load
+  useEffect(() => {
+    if (contentWidth > 0) {
+      rawX.set(-(contentWidth / 2) + (windowSize.width / 2));
+      rawY.set(-(contentHeight / 2) + (windowSize.height / 2));
+    }
+  }, [contentWidth, contentHeight, windowSize]);
 
+  // Final loading trigger
+  useEffect(() => {
+    if (progress === 100) {
+      const timer = setTimeout(() => setIsFullyLoaded(true), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [progress]);
+
+  // Global Interaction Listeners
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       cursorX.set(e.clientX - 12);
@@ -84,139 +126,157 @@ const MoodBoardPage: React.FC = () => {
       if (isDragging) {
         const dx = e.clientX - dragOrigin.current.x;
         const dy = e.clientY - dragOrigin.current.y;
-        rawX.set(dragOrigin.current.canvasX + dx);
-        rawY.set(dragOrigin.current.canvasY + dy);
+        const minX = -(contentWidth - windowSize.width + 200);
+        const minY = -(contentHeight - windowSize.height + 200);
+        rawX.set(Math.min(Math.max(dragOrigin.current.canvasX + dx, minX), 200));
+        rawY.set(Math.min(Math.max(dragOrigin.current.canvasY + dy, minY), 200));
       }
     };
-
     const handleMouseUp = () => setIsDragging(false);
-
-    // Wheel/Scroll handling for all directions
     const handleWheel = (e: WheelEvent) => {
-      // Prevents browser back/forward on trackpads
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-        e.preventDefault();
-      }
-      
-      // Update target positions (raw motion values)
-      rawX.set(rawX.get() - e.deltaX);
-      rawY.set(rawY.get() - e.deltaY);
+      if (Math.abs(e.deltaX) < 1 && Math.abs(e.deltaY) < 1) return;
+      e.preventDefault();
+      const minX = -(contentWidth - windowSize.width + 200);
+      const minY = -(contentHeight - windowSize.height + 200);
+      rawX.set(Math.min(Math.max(rawX.get() - e.deltaX * 1.5, minX), 200));
+      rawY.set(Math.min(Math.max(rawY.get() - e.deltaY * 1.5, minY), 200));
     };
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
     window.addEventListener('wheel', handleWheel, { passive: false });
-    
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
       window.removeEventListener('wheel', handleWheel);
     };
-  }, [isDragging]);
-
-  const onMouseDown = (e: React.MouseEvent) => {
-    if (e.button !== 0) return;
-    setIsDragging(true);
-    dragOrigin.current = {
-      x: e.clientX,
-      y: e.clientY,
-      canvasX: rawX.get(),
-      canvasY: rawY.get()
-    };
-  };
+  }, [isDragging, contentWidth, contentHeight, windowSize]);
 
   return (
-    <div 
-      className="fixed inset-0 w-screen h-screen overflow-hidden bg-background select-none cursor-none"
-      onMouseDown={onMouseDown}
-    >
-      {/* Background Mesh */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.08] z-0 overflow-hidden">
-        <div className="absolute inset-0 animate-mesh-drift">
-          <div className="absolute top-[-20%] left-[-10%] w-[100%] h-[100%] rounded-full bg-moss blur-[200px]" />
-          <div className="absolute bottom-[-20%] right-[-10%] w-[100%] h-[100%] rounded-full bg-moss blur-[200px]" />
-          <div className="absolute top-[30%] right-[15%] w-[60%] h-[60%] rounded-full bg-charcoal blur-[220px]" />
-        </div>
-      </div>
-
-      {/* Dynamic Custom Cursor */}
-      <motion.div 
-        style={{ x: cursorX, y: cursorY, scale: cursorScale, opacity: cursorOpacity }}
-        className="fixed top-0 left-0 w-6 h-6 pointer-events-none z-[100] hidden md:block"
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-[#090D20] select-none cursor-none">
+      
+      {/* Updated Home Button Link: Bigger and Stylized */}
+      <Link 
+        to="/#about" 
+        className="fixed top-8 right-8 z-[250] font-instrument italic text-4xl px-10 py-4 text-[#FBFAF8] bg-white/5 border border-white/10 rounded-full backdrop-blur-md hover:bg-white/15 hover:border-white/30 transition-all duration-300 shadow-xl"
       >
-        <svg width="24" height="24" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="11" fill="#000000" />
-        </svg>
+        Home
+      </Link>
+
+      {/* Reactive Custom Cursor */}
+      <motion.div 
+        style={{ x: cursorX, y: cursorY }}
+        className="fixed top-0 left-0 w-6 h-6 pointer-events-none z-[300] hidden md:block"
+      >
+        <div className="w-6 h-6 rounded-full bg-white opacity-10" />
       </motion.div>
 
-      {/* Infinite Canvas Container */}
+      {/* LOADING OVERLAY: SPACE ELEVATOR */}
+      <AnimatePresence>
+        {!isFullyLoaded && (
+          <motion.div 
+            exit={{ y: '-100%', opacity: 0 }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 z-[200] overflow-hidden bg-[#090D20]"
+          >
+            <motion.div 
+              style={{ y: elevatorY, filter: motionBlur }}
+              className="absolute inset-0 h-[300%] w-full"
+            >
+              <div className="h-full w-full bg-gradient-to-t from-[#42B3F0] via-[#1a3a6b] to-[#090D20]" />
+              
+              <div className="absolute bottom-0 left-0 w-full h-[33.3%] pointer-events-none overflow-hidden opacity-60">
+                <svg viewBox="0 0 1000 400" className="absolute bottom-[-50px] w-full h-auto preserve-3d">
+                   <filter id="cloud-blur"><feGaussianBlur stdDeviation="40" /></filter>
+                   <g filter="url(#cloud-blur)">
+                      <ellipse cx="200" cy="350" rx="400" ry="150" fill="white" fillOpacity="0.4" />
+                      <ellipse cx="800" cy="380" rx="500" ry="180" fill="white" fillOpacity="0.3" />
+                      <ellipse cx="500" cy="400" rx="600" ry="120" fill="white" fillOpacity="0.5" />
+                   </g>
+                </svg>
+              </div>
+
+              <motion.div style={{ opacity: spaceOpacity }} className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-[10%] left-[20%] w-1 h-1 bg-white rounded-full animate-pulse" />
+                <div className="absolute top-[15%] left-[80%] w-0.5 h-0.5 bg-white rounded-full" />
+                <div className="absolute top-[5%] left-[50%] w-1 h-1 bg-white rounded-full animate-pulse [animation-delay:1s]" />
+              </motion.div>
+            </motion.div>
+
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="relative text-center">
+                <motion.div
+                   className="font-instrument italic text-[#FBFAF8] leading-none"
+                   style={{ fontSize: 'clamp(80px, 15vw, 240px)' }}
+                >
+                  {Math.round(progress)}%
+                </motion.div>
+                <div className="mt-4 overflow-hidden h-[1px] w-32 mx-auto bg-white/20 relative">
+                  <motion.div 
+                    style={{ width: `${progress}%` }}
+                    className="absolute inset-0 bg-white"
+                  />
+                </div>
+                <div className="mt-8 text-[10px] uppercase tracking-[0.5em] text-white/40 font-bold">
+                  Ascending Archive
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* INFINITE CANVAS MOOD BOARD */}
       <motion.div 
-        style={{ x: canvasX, y: canvasY, width: CANVAS_SIZE, height: CANVAS_SIZE }}
-        className="absolute top-0 left-0 pointer-events-auto"
+        style={{ x: canvasX, y: canvasY, width: contentWidth, height: contentHeight }}
+        className="absolute top-0 left-0"
+        onMouseDown={(e: any) => {
+          if (e.button !== 0) return;
+          setIsDragging(true);
+          dragOrigin.current = { x: e.clientX, y: e.clientY, canvasX: rawX.get(), canvasY: rawY.get() };
+        }}
       >
-        {galleryItems.map((item, index) => (
+        {galleryItems.map((item) => (
           <div 
             key={item.id} 
             className="absolute"
-            style={{ 
-              left: `${item.x}px`, 
-              top: `${item.y}px`,
-              width: `${item.width}px`
-            }}
+            style={{ left: `${item.x}px`, top: `${item.y}px`, width: `${item.width}px` }}
           >
-            <GalleryPlate item={item} index={index} />
+            <GalleryPlate 
+              item={item} 
+              isCanvasDragging={isDragging} 
+              onLoad={() => setLoadedCount(prev => prev + 1)}
+            />
           </div>
         ))}
       </motion.div>
 
-      {/* Info Overlay */}
-      <div className="fixed bottom-12 left-12 pointer-events-none z-50">
-        <div className="flex flex-col gap-1">
-          <span className="text-[10px] uppercase tracking-[0.5em] text-charcoal/20 font-bold">Inspiration Archive</span>
-          <span className="text-[9px] uppercase tracking-[0.3em] text-charcoal/10 font-medium italic">Drag or Scroll to Move</span>
-        </div>
+      <div className="fixed bottom-12 left-12 pointer-events-none z-50 mix-blend-difference">
+        <span className="text-[10px] uppercase tracking-[0.6em] text-white/50 font-black">My design inspirations</span>
       </div>
 
       <style>{`
-        @keyframes mesh-drift {
-          0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-          50% { transform: translate(2%, 3%) scale(1.05) rotate(0.5deg); }
-          100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-        }
-        .animate-mesh-drift {
-          animation: mesh-drift 45s ease-in-out infinite;
-        }
-        .backface-hidden {
-          backface-visibility: hidden;
-          -webkit-backface-visibility: hidden;
-        }
-        .perspective-2000 {
-          perspective: 2000px;
-        }
-        .preserve-3d {
-          transform-style: preserve-3d;
-        }
+        .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+        .perspective-2000 { perspective: 2000px; }
+        .preserve-3d { transform-style: preserve-3d; }
       `}</style>
     </div>
   );
 };
 
-const GalleryPlate: React.FC<{ item: any; index: number }> = ({ item, index }) => {
+const GalleryPlate: React.FC<{ item: any; isCanvasDragging: boolean; onLoad: () => void }> = ({ item, isCanvasDragging, onLoad }) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
+      initial={{ opacity: 0, scale: 0.95 }}
       whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true, margin: "600px" }}
+      viewport={{ once: true, margin: "400px" }}
       transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{ 
-        scale: 1.08, 
-        zIndex: 50,
-        transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } 
-      }}
+      whileHover={{ scale: 1.05, zIndex: 50 }}
       className="perspective-2000 relative group"
-      onClick={(e) => {
+      onClick={(e: any) => {
+        if (isCanvasDragging) return;
         e.stopPropagation();
         setIsFlipped(!isFlipped);
       }}
@@ -224,33 +284,32 @@ const GalleryPlate: React.FC<{ item: any; index: number }> = ({ item, index }) =
       <motion.div
         animate={{ rotateY: isFlipped ? 180 : 0 }}
         transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-        className="relative preserve-3d w-full cursor-none"
+        className="relative preserve-3d w-full"
       >
-        {/* FRONT */}
         <div className="backface-hidden w-full relative">
-          <div className={`w-full bg-white transition-all duration-700 group-hover:shadow-[0_30px_90px_-20px_rgba(0,0,0,0.15)] ${item.aspectRatio}`}>
-            <OptimizedImage 
+          <div className={`w-full bg-white/5 transition-all duration-700 group-hover:shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] ${item.aspectRatio}`}>
+            <img 
               src={item.imageUrl} 
               alt={item.title} 
-              aspectRatio="aspect-auto" 
-              className="w-full h-full object-cover rounded-none" 
+              draggable="false"
+              onLoad={onLoad}
+              onError={onLoad} 
+              className="w-full h-full object-cover select-none bg-charcoal/20"
             />
           </div>
         </div>
 
-        {/* BACK */}
         <div 
-          className="absolute inset-0 backface-hidden bg-charcoal flex flex-col justify-between p-8 text-white shadow-2xl"
+          className="absolute inset-0 backface-hidden bg-[#FBFAF8] flex flex-col justify-between p-6 md:p-8 text-charcoal shadow-2xl"
           style={{ transform: 'rotateY(180deg)' }}
         >
-          <div className="flex flex-col gap-6">
-            <h3 className="font-serif text-2xl leading-tight border-b border-white/10 pb-6">{item.title}</h3>
-            <p className="text-white/40 text-xs leading-relaxed font-sans line-clamp-4">{item.description}</p>
+          <div className="flex flex-col gap-4">
+            <h3 className="font-serif text-lg md:text-xl leading-tight border-b border-charcoal/10 pb-4">{item.title}</h3>
+            <p className="text-charcoal/50 text-[10px] leading-relaxed font-sans uppercase tracking-wider line-clamp-4">{item.description}</p>
           </div>
-
-          <div className="flex flex-wrap gap-2 pt-6">
+          <div className="flex flex-wrap gap-1.5">
             {item.tags.map((tag: string) => (
-              <span key={tag} className="text-[8px] uppercase tracking-[0.2em] text-white/30 font-bold border border-white/10 px-3 py-1.5">
+              <span key={tag} className="text-[7px] uppercase tracking-[0.2em] text-moss font-bold border border-moss/10 px-2 py-1">
                 {tag}
               </span>
             ))}
