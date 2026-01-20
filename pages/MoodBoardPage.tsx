@@ -12,30 +12,31 @@ const MoodBoardPage: React.FC = () => {
   const [isFullyLoaded, setIsFullyLoaded] = useState(false);
   const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
   
-  // Logic to fill with placeholders if the real MOOD_BOARD is short
+  // Fill with placeholders to visualize density
   const displayItems = useMemo(() => {
     const items = [...MOOD_BOARD];
-    if (items.length < 30) {
-      const remaining = 30 - items.length;
+    // Add placeholders if we have less than 40 items to create a richer grid
+    if (items.length < 40) {
+      const remaining = 40 - items.length;
       for (let i = 0; i < remaining; i++) {
         items.push({
           id: `placeholder-${i}`,
           title: 'Perspective',
-          imageUrl: `https://images.unsplash.com/photo-${1500000000000 + i}?q=80&w=800&auto=format&fit=crop`,
+          imageUrl: `https://images.unsplash.com/photo-${1500000000000 + (i * 100)}?q=80&w=800&auto=format&fit=crop`,
           tags: ['Draft', 'Concept'],
           description: 'A structural placeholder for the evolving archive.'
         });
       }
     }
-    return items.slice(0, 50);
+    return items.slice(0, 60);
   }, []);
 
   const totalImages = displayItems.length;
   const progress = totalImages > 0 ? (loadedCount / totalImages) * 100 : 100;
 
-  // Custom Cursor Springs
-  const cursorX = useSpring(0, { stiffness: 1000, damping: 50 });
-  const cursorY = useSpring(0, { stiffness: 1000, damping: 50 });
+  // Custom Cursor Springs - White, 24px, 10% opacity
+  const cursorX = useSpring(0, { stiffness: 800, damping: 45 });
+  const cursorY = useSpring(0, { stiffness: 800, damping: 45 });
 
   // Handle responsive resize
   useEffect(() => {
@@ -48,18 +49,18 @@ const MoodBoardPage: React.FC = () => {
   const { galleryItems, contentWidth, contentHeight } = useMemo(() => {
     const isMobile = windowSize.width < 768;
     const isTablet = windowSize.width < 1024;
-    const colCount = isMobile ? 4 : isTablet ? 6 : 10;
-    const colWidth = isMobile ? 160 : isTablet ? 220 : 300;
-    const gapSize = isMobile ? 24 : isTablet ? 40 : 60;
+    const colCount = isMobile ? 3 : isTablet ? 5 : 8;
+    const colWidth = isMobile ? 200 : isTablet ? 280 : 340;
+    const gapSize = isMobile ? 32 : isTablet ? 48 : 64;
 
     const items: any[] = [];
-    const colHeights = new Array(colCount).fill(0).map(() => Math.random() * 100);
+    const colHeights = new Array(colCount).fill(0).map(() => Math.random() * 200);
 
     displayItems.forEach((baseItem, i) => {
       const shortestColIndex = colHeights.indexOf(Math.min(...colHeights));
-      const isPortrait = (i % 3 === 0) || (i % 7 === 0);
+      const isPortrait = (i % 3 === 0);
       const width = colWidth;
-      const height = isPortrait ? width * 1.4 : width * 0.9;
+      const height = isPortrait ? width * 1.3 : width * 0.85;
       const x = shortestColIndex * (colWidth + gapSize);
       const y = colHeights[shortestColIndex];
 
@@ -70,7 +71,7 @@ const MoodBoardPage: React.FC = () => {
         y,
         width,
         height,
-        aspectRatio: isPortrait ? 'aspect-[2/3]' : 'aspect-[16/11]'
+        aspectRatio: isPortrait ? 'aspect-[3/4]' : 'aspect-[16/10]'
       });
 
       colHeights[shortestColIndex] += height + gapSize;
@@ -86,22 +87,20 @@ const MoodBoardPage: React.FC = () => {
   // Motion Values for Canvas
   const rawX = useMotionValue(0);
   const rawY = useMotionValue(0);
-  const canvasX = useSpring(rawX, { stiffness: 150, damping: 30 });
-  const canvasY = useSpring(rawY, { stiffness: 150, damping: 30 });
+  const canvasX = useSpring(rawX, { stiffness: 120, damping: 30 });
+  const canvasY = useSpring(rawY, { stiffness: 120, damping: 30 });
   
-  // Loading Progress Value for Animation
+  // Loading and Movement Effects
   const animatedProgress = useSpring(progress, { stiffness: 40, damping: 20 });
   const progressVelocity = useVelocity(animatedProgress);
-  
-  // Sky to Space Mapping
   const elevatorY = useTransform(animatedProgress, [0, 100], ['-66.6%', '0%']);
   const motionBlur = useTransform(progressVelocity, [-100, 0, 100], ['blur(8px)', 'blur(0px)', 'blur(8px)']);
-  const spaceOpacity = useTransform(animatedProgress, [50, 100], [0, 1]);
+  const spaceOpacity = useTransform(animatedProgress, [60, 100], [0, 1]);
 
   const [isDragging, setIsDragging] = useState(false);
   const dragOrigin = useRef({ x: 0, y: 0, canvasX: 0, canvasY: 0 });
 
-  // Center canvas on load
+  // Initial Centering
   useEffect(() => {
     if (contentWidth > 0) {
       rawX.set(-(contentWidth / 2) + (windowSize.width / 2));
@@ -109,37 +108,41 @@ const MoodBoardPage: React.FC = () => {
     }
   }, [contentWidth, contentHeight, windowSize]);
 
-  // Final loading trigger
   useEffect(() => {
-    if (progress === 100) {
-      const timer = setTimeout(() => setIsFullyLoaded(true), 1000);
+    if (progress >= 99) {
+      const timer = setTimeout(() => setIsFullyLoaded(true), 1200);
       return () => clearTimeout(timer);
     }
   }, [progress]);
 
-  // Global Interaction Listeners
+  // Global Handlers
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
+      // Update cursor position
       cursorX.set(e.clientX - 12);
       cursorY.set(e.clientY - 12);
 
       if (isDragging) {
         const dx = e.clientX - dragOrigin.current.x;
         const dy = e.clientY - dragOrigin.current.y;
-        const minX = -(contentWidth - windowSize.width + 200);
-        const minY = -(contentHeight - windowSize.height + 200);
-        rawX.set(Math.min(Math.max(dragOrigin.current.canvasX + dx, minX), 200));
-        rawY.set(Math.min(Math.max(dragOrigin.current.canvasY + dy, minY), 200));
+        const limitX = 400;
+        const limitY = 400;
+        const minX = -(contentWidth - windowSize.width + limitX);
+        const minY = -(contentHeight - windowSize.height + limitY);
+        rawX.set(Math.min(Math.max(dragOrigin.current.canvasX + dx, minX), limitX));
+        rawY.set(Math.min(Math.max(dragOrigin.current.canvasY + dy, minY), limitY));
       }
     };
     const handleMouseUp = () => setIsDragging(false);
     const handleWheel = (e: WheelEvent) => {
       if (Math.abs(e.deltaX) < 1 && Math.abs(e.deltaY) < 1) return;
       e.preventDefault();
-      const minX = -(contentWidth - windowSize.width + 200);
-      const minY = -(contentHeight - windowSize.height + 200);
-      rawX.set(Math.min(Math.max(rawX.get() - e.deltaX * 1.5, minX), 200));
-      rawY.set(Math.min(Math.max(rawY.get() - e.deltaY * 1.5, minY), 200));
+      const limitX = 400;
+      const limitY = 400;
+      const minX = -(contentWidth - windowSize.width + limitX);
+      const minY = -(contentHeight - windowSize.height + limitY);
+      rawX.set(Math.min(Math.max(rawX.get() - e.deltaX * 1.5, minX), limitX));
+      rawY.set(Math.min(Math.max(rawY.get() - e.deltaY * 1.5, minY), limitY));
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -155,20 +158,20 @@ const MoodBoardPage: React.FC = () => {
   return (
     <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-[#090D20] select-none cursor-none">
       
-      {/* Updated Home Button Link: Bigger and Stylized */}
+      {/* Home Button: Styled, Large, Top Right */}
       <Link 
         to="/#about" 
-        className="fixed top-8 right-8 z-[250] font-instrument italic text-4xl px-10 py-4 text-[#FBFAF8] bg-white/5 border border-white/10 rounded-full backdrop-blur-md hover:bg-white/15 hover:border-white/30 transition-all duration-300 shadow-xl"
+        className="fixed top-8 right-8 z-[250] font-instrument italic text-4xl px-12 py-5 text-[#FBFAF8] bg-white/5 border border-white/10 rounded-full backdrop-blur-xl hover:bg-white/15 hover:border-white/30 transition-all duration-500 shadow-2xl active:scale-95"
       >
         Home
       </Link>
 
-      {/* Reactive Custom Cursor */}
+      {/* Custom Cursor: 24x24 White 10% Opacity */}
       <motion.div 
         style={{ x: cursorX, y: cursorY }}
         className="fixed top-0 left-0 w-6 h-6 pointer-events-none z-[300] hidden md:block"
       >
-        <div className="w-6 h-6 rounded-full bg-white opacity-10" />
+        <div className="w-6 h-6 rounded-full bg-white opacity-10 shadow-[0_0_10px_rgba(255,255,255,0.2)]" />
       </motion.div>
 
       {/* LOADING OVERLAY: SPACE ELEVATOR */}
@@ -176,7 +179,7 @@ const MoodBoardPage: React.FC = () => {
         {!isFullyLoaded && (
           <motion.div 
             exit={{ y: '-100%', opacity: 0 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
             className="fixed inset-0 z-[200] overflow-hidden bg-[#090D20]"
           >
             <motion.div 
@@ -185,7 +188,7 @@ const MoodBoardPage: React.FC = () => {
             >
               <div className="h-full w-full bg-gradient-to-t from-[#42B3F0] via-[#1a3a6b] to-[#090D20]" />
               
-              <div className="absolute bottom-0 left-0 w-full h-[33.3%] pointer-events-none overflow-hidden opacity-60">
+              <div className="absolute bottom-0 left-0 w-full h-[33.3%] pointer-events-none overflow-hidden opacity-40">
                 <svg viewBox="0 0 1000 400" className="absolute bottom-[-50px] w-full h-auto preserve-3d">
                    <filter id="cloud-blur"><feGaussianBlur stdDeviation="40" /></filter>
                    <g filter="url(#cloud-blur)">
@@ -218,7 +221,7 @@ const MoodBoardPage: React.FC = () => {
                   />
                 </div>
                 <div className="mt-8 text-[10px] uppercase tracking-[0.5em] text-white/40 font-bold">
-                  Ascending Archive
+                  Compiling Inspirations
                 </div>
               </div>
             </div>
@@ -226,7 +229,7 @@ const MoodBoardPage: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* INFINITE CANVAS MOOD BOARD */}
+      {/* INFINITE CANVAS */}
       <motion.div 
         style={{ x: canvasX, y: canvasY, width: contentWidth, height: contentHeight }}
         className="absolute top-0 left-0"
@@ -252,7 +255,7 @@ const MoodBoardPage: React.FC = () => {
       </motion.div>
 
       <div className="fixed bottom-12 left-12 pointer-events-none z-50 mix-blend-difference">
-        <span className="text-[10px] uppercase tracking-[0.6em] text-white/50 font-black">My design inspirations</span>
+        <span className="text-[10px] uppercase tracking-[0.6em] text-white/50 font-black">Archive V.04 // Drag to Explore</span>
       </div>
 
       <style>{`
@@ -269,9 +272,9 @@ const GalleryPlate: React.FC<{ item: any; isCanvasDragging: boolean; onLoad: () 
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
+      initial={{ opacity: 0, scale: 0.9 }}
       whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true, margin: "400px" }}
+      viewport={{ once: true, margin: "200px" }}
       transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ scale: 1.05, zIndex: 50 }}
       className="perspective-2000 relative group"
@@ -286,30 +289,32 @@ const GalleryPlate: React.FC<{ item: any; isCanvasDragging: boolean; onLoad: () 
         transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
         className="relative preserve-3d w-full"
       >
+        {/* Front Side */}
         <div className="backface-hidden w-full relative">
-          <div className={`w-full bg-white/5 transition-all duration-700 group-hover:shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] ${item.aspectRatio}`}>
+          <div className={`w-full bg-white/5 transition-all duration-700 group-hover:shadow-[0_40px_100px_-20px_rgba(0,0,0,0.4)] ${item.aspectRatio}`}>
             <img 
               src={item.imageUrl} 
               alt={item.title} 
               draggable="false"
               onLoad={onLoad}
               onError={onLoad} 
-              className="w-full h-full object-cover select-none bg-charcoal/20"
+              className="w-full h-full object-cover select-none bg-white/5"
             />
           </div>
         </div>
 
+        {/* Back Side */}
         <div 
-          className="absolute inset-0 backface-hidden bg-[#FBFAF8] flex flex-col justify-between p-6 md:p-8 text-charcoal shadow-2xl"
+          className="absolute inset-0 backface-hidden bg-[#FBFAF8] flex flex-col justify-between p-8 text-charcoal shadow-2xl rounded-sm"
           style={{ transform: 'rotateY(180deg)' }}
         >
-          <div className="flex flex-col gap-4">
-            <h3 className="font-serif text-lg md:text-xl leading-tight border-b border-charcoal/10 pb-4">{item.title}</h3>
-            <p className="text-charcoal/50 text-[10px] leading-relaxed font-sans uppercase tracking-wider line-clamp-4">{item.description}</p>
+          <div className="flex flex-col gap-6">
+            <h3 className="font-serif text-2xl leading-tight border-b border-charcoal/10 pb-6">{item.title}</h3>
+            <p className="text-charcoal/60 text-xs leading-relaxed font-sans uppercase tracking-widest line-clamp-6">{item.description}</p>
           </div>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-2">
             {item.tags.map((tag: string) => (
-              <span key={tag} className="text-[7px] uppercase tracking-[0.2em] text-moss font-bold border border-moss/10 px-2 py-1">
+              <span key={tag} className="text-[8px] uppercase tracking-[0.2em] text-moss font-bold border border-moss/15 px-3 py-1.5 rounded-full">
                 {tag}
               </span>
             ))}

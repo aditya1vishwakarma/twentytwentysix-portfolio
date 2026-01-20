@@ -7,7 +7,8 @@ const motion = motionComponent as any;
 
 interface ButtonProps {
   children: React.ReactNode;
-  onClick?: () => void;
+  // Fix: Updated onClick to support React.MouseEvent for event handling (e.g., stopPropagation)
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
   variant?: 'primary' | 'outline' | 'ghost';
   className?: string;
   type?: 'button' | 'submit';
