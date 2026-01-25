@@ -1,172 +1,277 @@
 
-import React, { useRef, useState, useEffect } from 'react';
-import { motion as motionComponent } from 'framer-motion';
-import * as ReactRouterDOM from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { PROJECTS } from '../../constants';
 import OptimizedImage from '../UI/OptimizedImage';
 
-const { Link } = ReactRouterDOM as any;
-const motion = motionComponent as any;
+// Base offsets
+const SPINE_OFFSET = 60;
+const MOBILE_SPINE_OFFSET = 40;
+const FAN_OUT_EXTRA = 15; // Extra pixels when an individual spine is hovered
+const CONTENT_FADE_DELAY = 0.05; // 50ms delay for content fade-in
 
 const WorkCarousel: React.FC = () => {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [hoveredSpineIndex, setHoveredSpineIndex] = useState<number | null>(null);
 
-  // Focus on the first 3 projects for the homepage highlight
-  const displayProjects = PROJECTS.slice(0, 3);
-
-  // Track horizontal scroll to determine active index
+  // Responsive check
   useEffect(() => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
-    const handleScroll = () => {
-      const scrollLeft = el.scrollLeft;
-      const containerWidth = el.offsetWidth;
-      const scrollWidth = el.scrollWidth;
-      
-      // Calculate active index based on how far we've scrolled relative to total scrollable area
-      const maxScroll = scrollWidth - containerWidth;
-      if (maxScroll <= 0) return;
-
-      const scrollPercentage = scrollLeft / maxScroll;
-      const index = Math.round(scrollPercentage * (displayProjects.length - 1));
-      
-      setActiveIndex(Math.max(0, Math.min(index, displayProjects.length - 1)));
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        setActiveIndex((prev) => Math.min(prev + 1, PROJECTS.length - 1));
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        setActiveIndex((prev) => Math.max(prev - 1, 0));
+      }
     };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
-    el.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    
-    // Also handle window resize which changes containerWidth
-    window.addEventListener('resize', handleScroll);
-    
-    return () => {
-      el.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
-    };
-  }, [displayProjects.length]);
+  const goToCard = useCallback((index: number) => {
+    setActiveIndex(index);
+  }, []);
+
+  const baseOffset = isMobile ? MOBILE_SPINE_OFFSET : SPINE_OFFSET;
 
   return (
-    <section 
+    <section
       id="works"
-      className="relative bg-background py-16 md:py-24 overflow-hidden"
+      className="relative w-full bg-background py-20 overflow-hidden min-h-[800px] flex flex-col justify-center"
+      style={{ zIndex: 1 }}
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-12">
-        
-        {/* Header */}
-        <div className="mb-10 md:mb-14 flex items-baseline justify-between">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="font-serif text-5xl md:text-7xl text-charcoal leading-none"
+      {/* Header */}
+      <div className="max-w-7xl mx-auto w-full px-6 mb-12 flex justify-between items-end">
+        <h2 className="text-5xl md:text-6xl font-serif text-charcoal">
+          Selected <span className="italic font-instrument text-moss">Works</span>
+        </h2>
+        <div className="flex flex-col items-end gap-1 hidden md:flex">
+          <Link
+            to="/works"
+            className="text-moss text-sm font-medium hover:underline underline-offset-4"
           >
-            Selected <span className="text-moss font-instrument italic font-normal">Works</span>
-          </motion.h2>
-          
-          <div className="hidden md:block text-charcoal/30 text-[10px] uppercase tracking-[0.4em] font-black">
-            Archive // 01—03
-          </div>
-        </div>
-
-        {/* HORIZONTAL CAROUSEL - Constrained and Clean */}
-        <div 
-          ref={scrollContainerRef}
-          className="flex gap-6 md:gap-8 overflow-x-auto pb-12 snap-x snap-mandatory no-scrollbar cursor-grab active:cursor-grabbing touch-pan-x"
-          style={{ 
-            scrollbarWidth: 'none', 
-            msOverflowStyle: 'none',
-            WebkitOverflowScrolling: 'touch'
-          }}
-        >
-          {displayProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-          
-          {/* Spacer to allow centering of the last card */}
-          <div className="min-w-[10vw] md:min-w-[20vw] h-1 flex-shrink-0" />
-        </div>
-
-        {/* SEGMENTED PROGRESS BAR - The main navigation indicator */}
-        <div className="flex gap-3 w-full h-[2px] max-w-2xl">
-          {displayProjects.map((_, idx) => (
-            <div 
-              key={idx} 
-              className="flex-1 bg-charcoal/5 relative overflow-hidden rounded-full h-full"
-            >
-              <motion.div 
-                initial={false}
-                animate={{ 
-                  backgroundColor: idx === activeIndex ? '#2E4F0A' : 'rgba(51, 51, 51, 0.05)',
-                  opacity: idx === activeIndex ? 1 : 0
-                }}
-                className="absolute inset-0 origin-left"
-              />
-              {idx === activeIndex && (
-                <motion.div 
-                  layoutId="activeCarouselSegment"
-                  className="absolute inset-0 bg-moss"
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                />
-              )}
-            </div>
-          ))}
+            View All →
+          </Link>
+          <span className="text-charcoal/40 font-mono text-sm tracking-widest">
+            {PROJECTS.length} projects so far
+          </span>
         </div>
       </div>
 
-      <style>{`
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
+      {/* Carousel Container */}
+      <div className="relative w-full max-w-7xl mx-auto px-6 h-[650px]">
+        <div className="relative w-full h-full">
+          {PROJECTS.map((project, index) => {
+            const isActive = index === activeIndex;
+            const isBehindActive = index > activeIndex;
+            const isBeforeActive = index < activeIndex;
+
+            // Z-Index Logic
+            let zIndex = 10;
+            if (isActive) zIndex = 50;
+            else if (isBehindActive) zIndex = PROJECTS.length - index;
+            else if (isBeforeActive) zIndex = index;
+
+            return (
+              <Card
+                key={project.id}
+                project={project}
+                index={index}
+                isActive={isActive}
+                isBehindActive={isBehindActive}
+                isBeforeActive={isBeforeActive}
+                zIndex={zIndex}
+                activeIndex={activeIndex}
+                baseOffset={baseOffset}
+                isHovered={hoveredSpineIndex === index}
+                onHoverStart={() => setHoveredSpineIndex(index)}
+                onHoverEnd={() => setHoveredSpineIndex(null)}
+                totalCards={PROJECTS.length}
+                onClick={() => goToCard(index)}
+              />
+            );
+          })}
+        </div>
+      </div>
     </section>
   );
 };
 
-const ProjectCard: React.FC<{ project: any }> = ({ project }) => {
+interface CardProps {
+  project: typeof PROJECTS[0];
+  index: number;
+  isActive: boolean;
+  isBehindActive: boolean;
+  isBeforeActive: boolean;
+  zIndex: number;
+  activeIndex: number;
+  baseOffset: number;
+  isHovered: boolean;
+  onHoverStart: () => void;
+  onHoverEnd: () => void;
+  totalCards: number;
+  onClick: () => void;
+}
+
+const Card: React.FC<CardProps> = ({
+  project,
+  index,
+  isActive,
+  isBehindActive,
+  isBeforeActive,
+  zIndex,
+  activeIndex,
+  baseOffset,
+  isHovered,
+  onHoverStart,
+  onHoverEnd,
+  totalCards,
+  onClick,
+}) => {
+  // Spine-level hover: only THIS spine fans out
+  const spineWidth = isHovered && !isActive ? baseOffset + FAN_OUT_EXTRA : baseOffset;
+
+  // Active card position anchors (stable)
+  const stableLeftSpace = activeIndex * baseOffset;
+  const stableRightSpace = (totalCards - activeIndex - 1) * baseOffset;
+
+  // Background card positions
+  const dynamicBehindLeftPosition = isBehindActive
+    ? `calc(100% - ${(totalCards - index) * baseOffset}px)`
+    : 'auto';
+
+  // Left spines: shift left on hover so they fan OUTWARD
+  const leftSpineHoverShift = isBeforeActive && isHovered ? FAN_OUT_EXTRA : 0;
+  const dynamicBeforeLeftPosition = isBeforeActive
+    ? `${index * baseOffset - leftSpineHoverShift}px`
+    : 'auto';
+
+  // Atmospheric perspective (NO scale change)
+  const brightness = isActive ? 1 : 0.94;
+  const grayscale = isActive ? 0 : 0.15;
+
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.98 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true }}
-      className="min-w-[80vw] sm:min-w-[400px] md:min-w-[520px] max-w-[520px] snap-start flex-shrink-0"
+      layout
+      initial={false}
+      animate={{
+        filter: `brightness(${brightness}) grayscale(${grayscale})`,
+      }}
+      transition={{
+        type: 'spring',
+        stiffness: 300,
+        damping: 30,
+      }}
+      onHoverStart={!isActive ? onHoverStart : undefined}
+      onHoverEnd={!isActive ? onHoverEnd : undefined}
+      style={{
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: isActive
+          ? `${stableLeftSpace}px`
+          : (isBeforeActive ? dynamicBeforeLeftPosition : dynamicBehindLeftPosition),
+        width: isActive
+          ? `calc(100% - ${stableLeftSpace + stableRightSpace}px)`
+          : `${spineWidth}px`,
+        zIndex: zIndex,
+        cursor: !isActive ? 'pointer' : 'default',
+      }}
+      onClick={!isActive ? onClick : undefined}
+      className={`
+        bg-white 
+        border border-charcoal/10
+        ${isActive ? 'shadow-2xl' : 'shadow-lg hover:shadow-xl'}
+        overflow-hidden
+      `}
     >
-      <div className="group flex flex-col bg-white rounded-xl overflow-hidden transition-all duration-500 ease-out hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-1">
-        
-        {/* Image Frame - Aspect ratio controlled to prevent vertical bloating */}
-        <div className="relative aspect-[16/10] overflow-hidden bg-charcoal/5">
-          <OptimizedImage 
-            src={project.imageUrl} 
-            alt={project.title} 
-            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-charcoal/5 opacity-0 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none" />
-        </div>
-
-        {/* Content Footer - Title on top, Category below with intentional spacing */}
-        <div className="p-8 md:p-10 bg-white flex items-end justify-between">
-          <div className="flex flex-col">
-            <h3 className="font-serif text-3xl md:text-4xl text-charcoal mb-4 leading-tight">
-              {project.title}
-            </h3>
-            <span className="text-[10px] uppercase tracking-[0.3em] text-moss font-black">
-              {project.category}
-            </span>
-          </div>
-
-          {/* Read More Link */}
-          <Link 
-            to={project.path}
-            className="flex flex-col items-end group/btn"
+      {/* Active Card Content - Fades in with delay */}
+      <AnimatePresence mode="wait">
+        {isActive && (
+          <motion.div
+            key="active-content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{
+              duration: 0.2,
+              delay: CONTENT_FADE_DELAY,
+              ease: 'easeOut'
+            }}
+            className="w-full h-full flex flex-col"
           >
-            <span className="text-[10px] uppercase tracking-[0.2em] font-black text-charcoal/40 group-hover/btn:text-moss transition-colors">
-              Read More
-            </span>
-            <div className="w-6 h-[1px] bg-charcoal/10 mt-3 group-hover/btn:w-full group-hover/btn:bg-moss transition-all duration-300" />
-          </Link>
-        </div>
-      </div>
+            <div className="flex-grow grid grid-rows-[55%_45%] h-full">
+              <div className="relative bg-charcoal/5 w-full h-full overflow-hidden">
+                {project.imageUrl ? (
+                  <OptimizedImage
+                    src={project.imageUrl}
+                    alt={project.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full text-charcoal/20 uppercase tracking-widest font-bold">
+                    Image
+                  </div>
+                )}
+              </div>
+
+              {/* Footer Grid */}
+              <div className="bg-white p-6 md:p-10 grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-8 md:gap-16 items-start h-full">
+                {/* Left Col */}
+                <div className="flex flex-col">
+                  <h3 className="text-2xl md:text-4xl font-serif text-charcoal leading-tight">
+                    {project.title}
+                  </h3>
+                  <p className="text-xs font-mono text-charcoal/50 uppercase tracking-widest mt-4">
+                    {project.date} // {project.role}
+                  </p>
+                </div>
+
+                {/* Right Col */}
+                <div className="flex flex-col justify-between h-full">
+                  <p className="text-charcoal/80 leading-relaxed text-sm md:text-base mb-6 line-clamp-5">
+                    {project.fullDescription || project.description}
+                  </p>
+
+                  <Link
+                    to={project.path}
+                    className="self-end inline-flex items-center text-moss font-black uppercase text-[10px] tracking-widest hover:translate-x-2 transition-transform"
+                  >
+                    Read Case Study →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Spine Content - Fades out immediately */}
+      <AnimatePresence mode="wait">
+        {!isActive && (
+          <motion.div
+            key="spine-content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.1, ease: 'easeOut' }}
+            className="w-full h-full flex items-center justify-center bg-white"
+          >
+            <div className={`whitespace-nowrap text-charcoal/60 uppercase tracking-widest font-mono text-[10px] origin-center ${isBeforeActive ? '-rotate-90' : 'rotate-90'}`}>
+              {project.title}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
