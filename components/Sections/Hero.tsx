@@ -82,37 +82,40 @@ const Hero: React.FC = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const touchStartX = useRef<number | null>(null);
 
+  // Images with preview and full-quality URLs
+  // Preview: ~400x400 thumbnails for grid (fast loading)
+  // Full: High-resolution for lightbox
   const images = [
-    "https://images.unsplash.com/photo-1518128958364-65859d70aa41?q=80&w=800",
-    "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?q=80&w=800",
-    "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800",
-    "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=800",
-    "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=800",
-    "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800",
-    "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=800",
-    "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=800",
-    "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=800",
-    "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?q=80&w=800",
-    "https://images.unsplash.com/photo-1433086566280-57820a221485?q=80&w=800",
-    "https://images.unsplash.com/photo-1501854140801-50d01698950b?q=80&w=800",
-    "https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=800",
-    "https://images.unsplash.com/photo-1426604966848-d7adac402bff?q=80&w=800",
-    "https://images.unsplash.com/photo-1465056836041-7f43ac27dcb5?q=80&w=800",
-    "https://images.unsplash.com/photo-1482192505345-5655af888cc4?q=80&w=800",
-    "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?q=80&w=800",
-    "https://images.unsplash.com/photo-1494500764479-0c8f2919a3d8?q=80&w=800",
-    "https://images.unsplash.com/photo-1504567961542-e24d9439a724?q=80&w=800",
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800",
-    "https://images.unsplash.com/photo-1508193638397-1c4234db14d8?q=80&w=800",
-    "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=800",
-    "https://images.unsplash.com/photo-1510797215324-95aa89f43c33?q=80&w=800",
-    "https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=800",
-    "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=800",
-    "https://images.unsplash.com/photo-1518173946687-a4c036bc1b9d?q=80&w=800",
-    "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=800",
-    "https://images.unsplash.com/photo-1520962880247-cfaf541c8724?q=80&w=800",
-    "https://images.unsplash.com/photo-1523712999610-f77fbcfc3843?q=80&w=800",
-    "https://images.unsplash.com/photo-1527489377706-5bf97e608852?q=80&w=800"
+    { preview: "https://images.unsplash.com/photo-1518128958364-65859d70aa41?q=80&w=400", full: "https://images.unsplash.com/photo-1518128958364-65859d70aa41?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?q=80&w=400", full: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=400", full: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=400", full: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=400", full: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=400", full: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=400", full: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=400", full: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=400", full: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?q=80&w=400", full: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1433086566280-57820a221485?q=80&w=400", full: "https://images.unsplash.com/photo-1433086566280-57820a221485?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1501854140801-50d01698950b?q=80&w=400", full: "https://images.unsplash.com/photo-1501854140801-50d01698950b?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=400", full: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1426604966848-d7adac402bff?q=80&w=400", full: "https://images.unsplash.com/photo-1426604966848-d7adac402bff?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1465056836041-7f43ac27dcb5?q=80&w=400", full: "https://images.unsplash.com/photo-1465056836041-7f43ac27dcb5?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1482192505345-5655af888cc4?q=80&w=400", full: "https://images.unsplash.com/photo-1482192505345-5655af888cc4?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?q=80&w=400", full: "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1494500764479-0c8f2919a3d8?q=80&w=400", full: "https://images.unsplash.com/photo-1494500764479-0c8f2919a3d8?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1504567961542-e24d9439a724?q=80&w=400", full: "https://images.unsplash.com/photo-1504567961542-e24d9439a724?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400", full: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1508193638397-1c4234db14d8?q=80&w=400", full: "https://images.unsplash.com/photo-1508193638397-1c4234db14d8?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=400", full: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1510797215324-95aa89f43c33?q=80&w=400", full: "https://images.unsplash.com/photo-1510797215324-95aa89f43c33?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=400", full: "https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=400", full: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1518173946687-a4c036bc1b9d?q=80&w=400", full: "https://images.unsplash.com/photo-1518173946687-a4c036bc1b9d?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=400", full: "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1520962880247-cfaf541c8724?q=80&w=400", full: "https://images.unsplash.com/photo-1520962880247-cfaf541c8724?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1523712999610-f77fbcfc3843?q=80&w=400", full: "https://images.unsplash.com/photo-1523712999610-f77fbcfc3843?q=80&w=1600" },
+    { preview: "https://images.unsplash.com/photo-1527489377706-5bf97e608852?q=80&w=400", full: "https://images.unsplash.com/photo-1527489377706-5bf97e608852?q=80&w=1600" }
   ];
 
   // Mobile detection (disables cursor animation on small screens)
@@ -251,14 +254,14 @@ const Hero: React.FC = () => {
         {/* PHOTO GRID - 4x8 on desktop, 4x5 on mobile (no overflow) */}
         <div className={`flex-1 w-full flex items-center justify-center transition-all duration-1000 ${isFullyRevealed ? "opacity-100" : "opacity-40"}`}>
           <div className="grid grid-cols-4 md:grid-cols-8 gap-0.5">
-            {(isMobile ? images.slice(0, 20) : images).map((src, i) => (
+            {(isMobile ? images.slice(0, 20) : images).map((img, i) => (
               <motion.div
                 key={i}
                 whileHover={{ scale: 1.05, zIndex: 10, transition: { duration: 0.2 } }}
                 onClick={() => isFullyRevealed && setSelectedImageIndex(i)}
                 className="cursor-pointer overflow-hidden aspect-square shadow-sm hover:shadow-2xl transition-shadow bg-white/10"
               >
-                <img src={src} className="w-full h-full object-cover" alt={`Gallery ${i}`} loading="lazy" />
+                <img src={img.preview} className="w-full h-full object-cover" alt={`Gallery ${i}`} loading="lazy" />
               </motion.div>
             ))}
           </div>
@@ -300,10 +303,10 @@ const Hero: React.FC = () => {
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
               </button>
 
-              {/* Image */}
+              {/* Image - Uses full resolution */}
               <motion.img
                 key={selectedImageIndex}
-                src={images[selectedImageIndex]}
+                src={images[selectedImageIndex].full}
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
