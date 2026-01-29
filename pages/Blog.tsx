@@ -57,6 +57,9 @@ const Blog: React.FC = () => {
             </motion.article>
           ))}
         </div>
+        <p className="text-xl text-charcoal/60 leading-relaxed italic font-serif">
+          NONE of my articles are written by AI. I don't want to outsource my own critical thinking. It's only used to research. What I communicate is my own language and own thoughts.
+        </p>
       </div>
     </motion.div>
   );
