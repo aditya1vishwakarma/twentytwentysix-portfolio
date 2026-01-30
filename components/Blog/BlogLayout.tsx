@@ -110,6 +110,7 @@ const BlogLayout: React.FC<BlogLayoutProps> = ({ children, title, date, readTime
           {children}
         </article>
 
+        {/* 
         <div className="mt-24 pt-12 border-t border-charcoal/10 text-center">
           <h4 className="text-sm uppercase tracking-widest text-charcoal/40 mb-8">Ready for more?</h4>
           <div className="flex flex-col md:flex-row gap-4 justify-center">
@@ -117,6 +118,7 @@ const BlogLayout: React.FC<BlogLayoutProps> = ({ children, title, date, readTime
             <Button onClick={() => navigate('/works')}>View Projects</Button>
           </div>
         </div>
+        */}
       </div>
     </motion.div>
   );

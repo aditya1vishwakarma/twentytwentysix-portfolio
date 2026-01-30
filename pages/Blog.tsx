@@ -191,15 +191,6 @@ const Blog: React.FC = () => {
             ))}
           </AnimatePresence>
         </div>
-
-        {/* FOOTER NOTE: Grid-aligned to left spine */}
-        <div className="grid grid-cols-12 gap-6 mt-24">
-          <div className="col-span-12 md:col-span-3" /> {/* Spacer for alignment */}
-          <p className="col-span-12 md:col-span-9 text-sm text-charcoal/40 leading-relaxed italic font-serif">
-            None of my articles are written by AI. I don't want to outsource my own critical thinking. It's only used to research. What I communicate is my own language and own thoughts.
-          </p>
-        </div>
-
       </div>
     </motion.div>
   );
