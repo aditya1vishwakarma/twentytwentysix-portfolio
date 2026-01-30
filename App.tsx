@@ -13,6 +13,9 @@ import Footer from './components/Layout/Footer';
 import InvisibleHand from './pages/blog/InvisibleHand';
 import GrowthDesign from './pages/blog/GrowthDesign';
 import NatureGrid from './pages/blog/NatureGrid';
+import PlaceholderOne from './pages/blog/PlaceholderOne';
+import PlaceholderTwo from './pages/blog/PlaceholderTwo';
+import PlaceholderThree from './pages/blog/PlaceholderThree';
 
 // Individual Project Pages
 import AlpineRetreat from './pages/works/AlpineRetreat';
@@ -63,15 +66,18 @@ const App: React.FC = () => {
           <Route path="/works" element={<Works />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/moodboard" element={<MoodBoardPage />} />
-          
+
           {/* Project Routes */}
           <Route path="/works/alpine-retreat" element={<AlpineRetreat />} />
           <Route path="/works/botanical-brand" element={<BotanicalBrand />} />
-          
+
           {/* Blog Routes */}
           <Route path="/blog/invisible-hand" element={<InvisibleHand />} />
           <Route path="/blog/growth-as-design" element={<GrowthDesign />} />
           <Route path="/blog/natures-grid" element={<NatureGrid />} />
+          <Route path="/blog/placeholder-one" element={<PlaceholderOne />} />
+          <Route path="/blog/placeholder-two" element={<PlaceholderTwo />} />
+          <Route path="/blog/placeholder-three" element={<PlaceholderThree />} />
         </Routes>
       </LayoutWrapper>
     </HashRouter>

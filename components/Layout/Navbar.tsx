@@ -39,7 +39,7 @@ const Navbar: React.FC = () => {
   const handleContactClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsMenuOpen(false);
-    
+
     // Smoothly scroll to the global footer (present on all pages)
     const footer = document.getElementById('contact');
     if (footer) {
@@ -56,38 +56,39 @@ const Navbar: React.FC = () => {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -100, opacity: 0 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed top-0 left-0 right-0 z-50 px-6 py-4 md:px-12 md:py-6 bg-background/80 backdrop-blur-xl border-b border-charcoal/5"
+            className="fixed top-0 left-0 right-0 z-50 px-6 py-4 md:px-12 md:py-6 bg-background/75 backdrop-blur-xl border-b border-charcoal/5"
           >
             <div className="max-w-7xl mx-auto flex items-center justify-between">
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 className="font-serif text-xl md:text-2xl tracking-tight text-charcoal group whitespace-nowrap"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Aditya <span className="text-moss font-instrument italic font-normal">Vishwakarma</span>
               </Link>
-              
+
               {/* DESKTOP NAV */}
-              <div className="hidden md:flex items-center gap-10">
+              <div className="hidden md:flex items-center gap-8">
                 {navItems.map((item) => (
-                  <Link 
-                    key={item.label} 
-                    to={item.path} 
+                  <Link
+                    key={item.label}
+                    to={item.path}
                     className={`text-[10px] uppercase tracking-[0.2em] font-bold transition-colors ${location.pathname === item.path ? 'text-moss' : 'text-charcoal/40 hover:text-charcoal'}`}
                   >
                     {item.label}
                   </Link>
                 ))}
-                <button 
+                <div className="w-[1px] h-3 bg-charcoal/10" />
+                <button
                   onClick={handleContactClick}
-                  className="px-6 py-2 bg-charcoal text-white rounded-full text-[10px] uppercase tracking-widest font-bold hover:bg-moss transition-all active:scale-95"
+                  className="text-[10px] uppercase tracking-[0.2em] font-bold text-charcoal/40 hover:text-moss transition-colors"
                 >
                   Contact
                 </button>
               </div>
 
               {/* MOBILE MENU TOGGLE */}
-              <button 
+              <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="md:hidden p-2 hover:bg-charcoal/5 rounded-full transition-colors"
                 aria-label="Toggle menu"
@@ -119,13 +120,13 @@ const Navbar: React.FC = () => {
                 </Link>
               ))}
               <div className="mt-4 flex flex-col gap-6 items-center">
-                 <div className="w-12 h-[1px] bg-charcoal/10" />
-                 <button 
-                   onClick={handleContactClick} 
-                   className="text-sm uppercase tracking-[0.3em] text-charcoal/60 hover:text-moss transition-colors font-bold"
-                 >
-                   Contact
-                 </button>
+                <div className="w-12 h-[1px] bg-charcoal/10" />
+                <button
+                  onClick={handleContactClick}
+                  className="text-sm uppercase tracking-[0.3em] text-charcoal/60 hover:text-moss transition-colors font-bold"
+                >
+                  Contact
+                </button>
               </div>
             </div>
           </motion.div>

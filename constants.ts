@@ -78,6 +78,36 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: 'What we can learn about layout and hierarchy from the golden ratio and organic patterns.',
     path: '/blog/natures-grid',
     content: `The mountains don't have a style guide...`
+  },
+  {
+    id: '4',
+    title: 'Placeholder Article One',
+    date: 'Jan 30, 2026',
+    readTime: '5 min read',
+    category: 'Design',
+    excerpt: 'This is a placeholder summary for your first new article. It will bloom beautifully on the writings index page.',
+    path: '/blog/placeholder-one',
+    content: 'Placeholder content for article one.'
+  },
+  {
+    id: '5',
+    title: 'Placeholder Article Two',
+    date: 'Jan 30, 2026',
+    readTime: '8 min read',
+    category: 'Product',
+    excerpt: 'A second placeholder summary. Notice how the category \'Product\' will allow users to filter for this post.',
+    path: '/blog/placeholder-two',
+    content: 'Placeholder content for article two.'
+  },
+  {
+    id: '6',
+    title: 'Placeholder Article Three',
+    date: 'Jan 30, 2026',
+    readTime: '12 min read',
+    category: 'Philosophy',
+    excerpt: 'The third and final placeholder. This one is tagged \'Philosophy\' to demonstrate the varied filtering categories.',
+    path: '/blog/placeholder-three',
+    content: 'Placeholder content for article three.'
   }
 ];
 
