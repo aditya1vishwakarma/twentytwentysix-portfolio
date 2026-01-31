@@ -11,7 +11,7 @@ const MoodBoardPage: React.FC = () => {
   const [loadedCount, setLoadedCount] = useState(0);
   const [isFullyLoaded, setIsFullyLoaded] = useState(false);
   const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
-  
+
   // Fill with placeholders to visualize density
   const displayItems = useMemo(() => {
     const items = [...MOOD_BOARD];
@@ -58,9 +58,14 @@ const MoodBoardPage: React.FC = () => {
 
     displayItems.forEach((baseItem, i) => {
       const shortestColIndex = colHeights.indexOf(Math.min(...colHeights));
-      const isPortrait = (i % 3 === 0);
+
+      // Determine orientation: explicit override > auto-generated pattern
+      const isPortrait = baseItem.orientation
+        ? baseItem.orientation === 'portrait'
+        : (i % 3 === 0);
+
       const width = colWidth;
-      const height = isPortrait ? width * 1.3 : width * 0.85;
+      const height = isPortrait ? width * 1.4 : width * 0.75; // Taller portrait, wider landscape Look
       const x = shortestColIndex * (colWidth + gapSize);
       const y = colHeights[shortestColIndex];
 
@@ -71,16 +76,16 @@ const MoodBoardPage: React.FC = () => {
         y,
         width,
         height,
-        aspectRatio: isPortrait ? 'aspect-[3/4]' : 'aspect-[16/10]'
+        aspectRatio: isPortrait ? 'aspect-[3/4]' : 'aspect-[4/3]'
       });
 
       colHeights[shortestColIndex] += height + gapSize;
     });
 
-    return { 
-      galleryItems: items, 
-      contentWidth: colCount * (colWidth + gapSize) - gapSize, 
-      contentHeight: Math.max(...colHeights) 
+    return {
+      galleryItems: items,
+      contentWidth: colCount * (colWidth + gapSize) - gapSize,
+      contentHeight: Math.max(...colHeights)
     };
   }, [windowSize.width, displayItems]);
 
@@ -89,7 +94,7 @@ const MoodBoardPage: React.FC = () => {
   const rawY = useMotionValue(0);
   const canvasX = useSpring(rawX, { stiffness: 120, damping: 30 });
   const canvasY = useSpring(rawY, { stiffness: 120, damping: 30 });
-  
+
   // Loading and Movement Effects
   const animatedProgress = useSpring(progress, { stiffness: 40, damping: 20 });
   const progressVelocity = useVelocity(animatedProgress);
@@ -157,17 +162,17 @@ const MoodBoardPage: React.FC = () => {
 
   return (
     <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-[#090D20] select-none cursor-none">
-      
+
       {/* Home Button: Styled, Large, Top Right */}
-      <Link 
-        to="/#about" 
+      <Link
+        to="/#about"
         className="fixed top-8 right-8 z-[250] font-instrument italic text-4xl px-12 py-5 text-[#FBFAF8] bg-white/5 border border-white/10 rounded-full backdrop-blur-xl hover:bg-white/15 hover:border-white/30 transition-all duration-500 shadow-2xl active:scale-95"
       >
         Home
       </Link>
 
       {/* Custom Cursor: 24x24 White 10% Opacity */}
-      <motion.div 
+      <motion.div
         style={{ x: cursorX, y: cursorY }}
         className="fixed top-0 left-0 w-6 h-6 pointer-events-none z-[300] hidden md:block"
       >
@@ -177,25 +182,25 @@ const MoodBoardPage: React.FC = () => {
       {/* LOADING OVERLAY: SPACE ELEVATOR */}
       <AnimatePresence>
         {!isFullyLoaded && (
-          <motion.div 
+          <motion.div
             exit={{ y: '-100%', opacity: 0 }}
             transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
             className="fixed inset-0 z-[200] overflow-hidden bg-[#090D20]"
           >
-            <motion.div 
+            <motion.div
               style={{ y: elevatorY, filter: motionBlur }}
               className="absolute inset-0 h-[300%] w-full"
             >
               <div className="h-full w-full bg-gradient-to-t from-[#42B3F0] via-[#1a3a6b] to-[#090D20]" />
-              
+
               <div className="absolute bottom-0 left-0 w-full h-[33.3%] pointer-events-none overflow-hidden opacity-40">
                 <svg viewBox="0 0 1000 400" className="absolute bottom-[-50px] w-full h-auto preserve-3d">
-                   <filter id="cloud-blur"><feGaussianBlur stdDeviation="40" /></filter>
-                   <g filter="url(#cloud-blur)">
-                      <ellipse cx="200" cy="350" rx="400" ry="150" fill="white" fillOpacity="0.4" />
-                      <ellipse cx="800" cy="380" rx="500" ry="180" fill="white" fillOpacity="0.3" />
-                      <ellipse cx="500" cy="400" rx="600" ry="120" fill="white" fillOpacity="0.5" />
-                   </g>
+                  <filter id="cloud-blur"><feGaussianBlur stdDeviation="40" /></filter>
+                  <g filter="url(#cloud-blur)">
+                    <ellipse cx="200" cy="350" rx="400" ry="150" fill="white" fillOpacity="0.4" />
+                    <ellipse cx="800" cy="380" rx="500" ry="180" fill="white" fillOpacity="0.3" />
+                    <ellipse cx="500" cy="400" rx="600" ry="120" fill="white" fillOpacity="0.5" />
+                  </g>
                 </svg>
               </div>
 
@@ -209,13 +214,13 @@ const MoodBoardPage: React.FC = () => {
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="relative text-center">
                 <motion.div
-                   className="font-instrument italic text-[#FBFAF8] leading-none"
-                   style={{ fontSize: 'clamp(80px, 15vw, 240px)' }}
+                  className="font-instrument italic text-[#FBFAF8] leading-none"
+                  style={{ fontSize: 'clamp(80px, 15vw, 240px)' }}
                 >
                   {Math.round(progress)}%
                 </motion.div>
                 <div className="mt-4 overflow-hidden h-[1px] w-32 mx-auto bg-white/20 relative">
-                  <motion.div 
+                  <motion.div
                     style={{ width: `${progress}%` }}
                     className="absolute inset-0 bg-white"
                   />
@@ -230,7 +235,7 @@ const MoodBoardPage: React.FC = () => {
       </AnimatePresence>
 
       {/* INFINITE CANVAS */}
-      <motion.div 
+      <motion.div
         style={{ x: canvasX, y: canvasY, width: contentWidth, height: contentHeight }}
         className="absolute top-0 left-0"
         onMouseDown={(e: any) => {
@@ -240,14 +245,14 @@ const MoodBoardPage: React.FC = () => {
         }}
       >
         {galleryItems.map((item) => (
-          <div 
-            key={item.id} 
+          <div
+            key={item.id}
             className="absolute"
             style={{ left: `${item.x}px`, top: `${item.y}px`, width: `${item.width}px` }}
           >
-            <GalleryPlate 
-              item={item} 
-              isCanvasDragging={isDragging} 
+            <GalleryPlate
+              item={item}
+              isCanvasDragging={isDragging}
               onLoad={() => setLoadedCount(prev => prev + 1)}
             />
           </div>
@@ -292,19 +297,19 @@ const GalleryPlate: React.FC<{ item: any; isCanvasDragging: boolean; onLoad: () 
         {/* Front Side */}
         <div className="backface-hidden w-full relative">
           <div className={`w-full bg-white/5 transition-all duration-700 group-hover:shadow-[0_40px_100px_-20px_rgba(0,0,0,0.4)] ${item.aspectRatio}`}>
-            <img 
-              src={item.imageUrl} 
-              alt={item.title} 
+            <img
+              src={item.imageUrl}
+              alt={item.title}
               draggable="false"
               onLoad={onLoad}
-              onError={onLoad} 
+              onError={onLoad}
               className="w-full h-full object-cover select-none bg-white/5"
             />
           </div>
         </div>
 
         {/* Back Side */}
-        <div 
+        <div
           className="absolute inset-0 backface-hidden bg-[#FBFAF8] flex flex-col justify-between p-8 text-charcoal shadow-2xl rounded-sm"
           style={{ transform: 'rotateY(180deg)' }}
         >
@@ -319,9 +324,24 @@ const GalleryPlate: React.FC<{ item: any; isCanvasDragging: boolean; onLoad: () 
               </span>
             ))}
           </div>
+
+          {item.link && (
+            <div className="mt-4 pt-4 border-t border-charcoal/5 w-full">
+              <a
+                href={item.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center justify-between group/link w-full text-xs uppercase tracking-widest text-charcoal hover:text-moss transition-colors"
+              >
+                <span>Visit Source</span>
+                <span className="transform group-hover/link:translate-x-1 transition-transform">→</span>
+              </a>
+            </div>
+          )}
         </div>
       </motion.div>
-    </motion.div>
+    </motion.div >
   );
 };
 

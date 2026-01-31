@@ -33,4 +33,7 @@ export interface MoodBoardItem {
   imageUrl: string;
   tags: string[];
   description: string;
+  link?: string;
+  orientation?: 'landscape' | 'portrait';
+  cols?: number;
 }

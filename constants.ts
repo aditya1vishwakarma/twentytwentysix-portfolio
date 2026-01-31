@@ -117,14 +117,18 @@ export const MOOD_BOARD: MoodBoardItem[] = [
     title: 'Minimalism',
     imageUrl: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?q=80&w=800',
     tags: ['Clean', 'Light', 'Space'],
-    description: 'A study of negative space and how it defines boundaries without physical barriers.'
+    description: 'A study of negative space and how it defines boundaries without physical barriers.',
+    orientation: 'landscape',
+    cols: 2
   },
   {
     id: '2',
     title: 'Organic Forms',
     imageUrl: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=800',
     tags: ['Nature', 'Curves', 'Green'],
-    description: 'Drawing inspiration from the fractals of fern leaves and the weathering of stone.'
+    description: 'Drawing inspiration from the fractals of fern leaves and the weathering of stone.',
+    orientation: 'portrait',
+    link: 'https://unsplash.com/photos/fern-leaves-f009c37129b9'
   }
 ];
 
