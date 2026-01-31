@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import { PROJECTS } from '../../constants';
 import OptimizedImage from '../UI/OptimizedImage';
 
+import { ArrowRight } from 'lucide-react';
+
 // Base offsets
 const SPINE_OFFSET = 60;
 const MOBILE_SPINE_OFFSET = 40;
@@ -54,12 +56,13 @@ const WorkCarousel: React.FC = () => {
         <h2 className="text-5xl md:text-6xl font-serif text-charcoal">
           Selected <span className="italic font-instrument text-moss">Works</span>
         </h2>
-        <div className="flex flex-col items-end gap-1 hidden md:flex">
+        <div className="flex flex-col items-end gap-2 hidden md:flex">
           <Link
             to="/works"
-            className="text-moss text-sm font-medium hover:underline underline-offset-4"
+            className="group inline-flex items-center gap-2 text-charcoal/80 hover:text-moss transition-colors duration-300 font-medium uppercase tracking-widest text-xs"
           >
-            View All →
+            View All
+            <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
           <span className="text-charcoal/40 font-mono text-sm tracking-widest">
             {PROJECTS.length} projects so far
@@ -244,9 +247,10 @@ const Card: React.FC<CardProps> = ({
 
                   <Link
                     to={project.path}
-                    className="self-end inline-flex items-center text-moss font-black uppercase text-[10px] tracking-widest hover:translate-x-2 transition-transform"
+                    className="self-end group inline-flex items-center gap-2 text-moss font-bold uppercase text-[10px] tracking-widest hover:text-moss/80 transition-colors duration-300"
                   >
-                    Read Case Study →
+                    Read Case Study
+                    <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
                   </Link>
                 </div>
               </div>

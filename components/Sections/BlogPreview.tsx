@@ -68,7 +68,7 @@ const BlogPreview: React.FC = () => {
         <div className="flex justify-end mt-12 border-t border-charcoal/5 pt-8">
           <Link
             to="/blog"
-            className="group inline-flex items-center gap-2 text-charcoal/60 hover:text-moss transition-colors duration-300 font-medium uppercase tracking-widest text-xs"
+            className="group inline-flex items-center gap-2 text-charcoal/80 hover:text-moss transition-colors duration-300 font-medium uppercase tracking-widest text-xs"
           >
             View All Posts
             <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />

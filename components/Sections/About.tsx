@@ -13,9 +13,9 @@ const About: React.FC = () => {
     <section id="about" className="py-24 md:py-32 px-6 md:px-12 bg-background">
       <div className="max-w-7xl mx-auto border-t border-charcoal/10 pt-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
-          
+
           {/* Left Column: Intro - Removed sticky behavior to prevent overlapping */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -33,7 +33,7 @@ const About: React.FC = () => {
           </motion.div>
 
           {/* Right Column: Grid of Cards */}
-          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
               {
                 title: "My approach to the \"how\"",
@@ -47,38 +47,51 @@ const About: React.FC = () => {
               },
               {
                 title: "Mood Board",
-                content: "", 
+                content: "",
                 isLink: true,
                 path: "/moodboard",
                 span: "sm:col-span-2"
               }
             ].map((item, index) => (
-              <motion.div 
+              <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.6 }}
-                className={`group p-8 border border-charcoal/10 hover:border-moss/30 rounded-squircle transition-all duration-500 flex flex-col justify-between ${item.span} ${item.isLink ? 'bg-moss text-white border-none' : 'bg-white/50 hover:bg-white shadow-sm'}`}
+                className={`
+                  ${item.span}
+                  relative p-8 
+                  rounded-3xl 
+                  bg-white 
+                  border border-transparent 
+                  transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1.0)] 
+                  hover:scale-[1.02] 
+                  hover:border-moss/30
+                  ${item.isLink ? 'bg-[#F2F2F2]/50' : ''}
+                `}
               >
-                <div>
-                  <h3 className={`text-xl font-serif mb-3 ${item.isLink ? 'text-white/90 text-2xl' : 'text-moss'}`}>
-                    {item.title}
-                  </h3>
-                  {item.content && (
-                    <p className="text-charcoal/60 leading-relaxed text-sm group-hover:text-charcoal transition-colors">
-                      {item.content}
-                    </p>
+                <div className="flex flex-col h-full justify-between">
+                  <div>
+                    <h3 className={`text-xl font-serif mb-3 ${item.isLink ? 'text-charcoal' : 'text-moss'}`}>
+                      {item.title}
+                    </h3>
+                    {item.content && (
+                      <p className="text-charcoal/60 leading-relaxed text-sm">
+                        {item.content}
+                      </p>
+                    )}
+                  </div>
+
+                  {item.isLink && (
+                    <Link
+                      to={item.path}
+                      className="mt-8 inline-flex items-center gap-3 text-moss font-bold text-xs uppercase tracking-[0.2em] group-hover:gap-4 transition-all"
+                    >
+                      What inspires me <ArrowUpRight size={16} />
+                    </Link>
                   )}
                 </div>
-                {item.isLink && (
-                  <Link 
-                    to={item.path} 
-                    className="mt-8 inline-flex items-center gap-3 text-white font-bold text-xs uppercase tracking-[0.2em] group-hover:gap-5 transition-all"
-                  >
-                    What inspires me <ArrowUpRight size={16} />
-                  </Link>
-                )}
               </motion.div>
             ))}
           </div>
