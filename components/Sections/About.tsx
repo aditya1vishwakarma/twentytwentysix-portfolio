@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion as motionComponent } from 'framer-motion';
 import * as ReactRouterDOM from 'react-router-dom';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 // Fix: Cast imports to any to resolve environment-specific type errors
 const { Link } = ReactRouterDOM as any;
@@ -10,92 +10,92 @@ const motion = motionComponent as any;
 
 const About: React.FC = () => {
   return (
-    <section id="about" className="py-24 md:py-32 px-6 md:px-12 bg-background">
-      <div className="max-w-7xl mx-auto border-t border-charcoal/10 pt-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+    <section id="about" className="py-32 px-6 md:px-12 bg-[#F5F4F0]">
+      <div className="max-w-7xl mx-auto">
 
-          {/* Left Column: Intro - Removed sticky behavior to prevent overlapping */}
+        {/* Header / Intro Section */}
+        <div className="mb-16 md:mb-24">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="lg:col-span-5"
           >
-            {/* Heading forced to one line using whitespace-nowrap and clamp for fluid sizing */}
-            <h2 className="font-serif text-[clamp(2.5rem,7vw,4.5rem)] text-charcoal mb-6 leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
-              About <span className="text-moss font-instrument italic font-normal">Aditya</span>
+            <h2 className="font-serif text-[clamp(2.5rem,7vw,4.5rem)] text-charcoal mb-8 leading-none tracking-tight">
+              About <span className="text-[#3F6D0D] font-instrument italic font-normal">Aditya</span>
             </h2>
-            <div className="w-16 h-[1px] bg-moss mb-8" />
-            <p className="text-xl leading-relaxed text-charcoal/70 max-w-md">
-              A multidisciplinary APM bridging functionality with aesthetics that impacts high-growth digital strategy. I grew up in Cupertino, CA and am Based in San Francisco, creating at the intersection of art and technology.
+            <p className="text-xl md:text-2xl leading-relaxed text-charcoal/80 max-w-2xl font-sans">
+              A multidisciplinary APM bridging functionality with aesthetics that impacts high-growth digital strategy. Based in San Francisco, creating at the intersection of art and technology.
             </p>
           </motion.div>
+        </div>
 
-          {/* Right Column: Grid of Cards */}
-          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[
-              {
-                title: "My approach to the \"how\"",
-                content: "Rooted in the invisible. I believe design should function effortlessly like a natural ecosystem—providing calm and clarity amidst the chaos of complex data and high-velocity growth.",
-                span: "col-span-1"
-              },
-              {
-                title: "My approach to the \"what\"",
-                content: "Stripping away the noise to reveal the core intent. My methodology utilizes strict grid systems and typographic hierarchy to build products that are as performant as they are beautiful.",
-                span: "col-span-1"
-              },
-              {
-                title: "Mood Board",
-                content: "",
-                isLink: true,
-                path: "/moodboard",
-                span: "sm:col-span-2"
-              }
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-                className={`
-                  ${item.span}
-                  relative p-8 
-                  rounded-3xl 
-                  bg-white 
-                  border border-transparent 
-                  transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1.0)] 
-                  hover:scale-[1.02] 
-                  hover:border-moss/30
-                  ${item.isLink ? 'bg-[#F2F2F2]/50' : ''}
-                `}
-              >
-                <div className="flex flex-col h-full justify-between">
-                  <div>
-                    <h3 className={`text-xl font-serif mb-3 ${item.isLink ? 'text-charcoal' : 'text-moss'}`}>
-                      {item.title}
-                    </h3>
-                    {item.content && (
-                      <p className="text-charcoal/60 leading-relaxed text-sm">
+        {/* Structural Keyline */}
+        <div className="w-full h-[1px] bg-charcoal/10 mb-12" />
+
+        {/* Unboxed 3-Column Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 items-stretch">
+          {[
+            {
+              title: "My approach to the \"how\"",
+              content: "Rooted in the invisible. I believe design should function effortlessly like a natural ecosystem—providing calm and clarity amidst the chaos of complex data and high-velocity growth.",
+              isInteractive: false
+            },
+            {
+              title: "My approach to the \"what\"",
+              content: "Stripping away the noise to reveal the core intent. My methodology utilizes strict grid systems and typographic hierarchy to build products that are as performant as they are beautiful.",
+              isInteractive: false
+            },
+            {
+              title: "Mood Board",
+              content: "A collection of textures, typography, and interfaces that inspire my work and shape my design philosophy.",
+              isInteractive: true,
+              path: "/moodboard"
+            }
+          ].map((item, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 + 0.2, duration: 0.8 }}
+              className="h-full"
+            >
+              {/* Conditional Wrapper: Link vs Div */}
+              {item.isInteractive ? (
+                <Link to={item.path} className="block group h-full">
+                  <div className="relative p-8 rounded-3xl transition-colors duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1.0)] group-hover:bg-[#3F6D0D]/5 h-full flex flex-col justify-between">
+                    {/* Content Container */}
+                    <div className="relative z-10">
+                      <h3 className="font-serif text-2xl text-[#3F6D0D] mb-4">
+                        {item.title}
+                      </h3>
+                      <p className="text-charcoal/60 text-base leading-loose font-sans mb-8">
                         {item.content}
                       </p>
-                    )}
+                    </div>
+
+                    {/* Animated Arrow Glyph - Bottom Right of the CARD */}
+                    <div className="flex justify-end items-end p-2 md:p-0">
+                      <span className="text-[#3F6D0D] transform transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1.0)] opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0">
+                        <ArrowRight size={24} strokeWidth={1.5} />
+                      </span>
+                    </div>
                   </div>
-
-                  {item.isLink && (
-                    <Link
-                      to={item.path}
-                      className="mt-8 inline-flex items-center gap-3 text-moss font-bold text-xs uppercase tracking-[0.2em] group-hover:gap-4 transition-all"
-                    >
-                      What inspires me <ArrowUpRight size={16} />
-                    </Link>
-                  )}
+                </Link>
+              ) : (
+                // Static Column - Using EXACT SAME padding structure for Geometric Sanity
+                <div className="p-8 border border-transparent h-full">
+                  <h3 className="font-serif text-2xl text-charcoal mb-4">
+                    {item.title}
+                  </h3>
+                  <p className="text-charcoal/60 text-base leading-loose font-sans">
+                    {item.content}
+                  </p>
                 </div>
-              </motion.div>
-            ))}
-          </div>
-
+              )}
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
