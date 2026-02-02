@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion as motionComponent, AnimatePresence, useMotionValue, useSpring, useTransform, useAnimationFrame } from 'framer-motion';
-import { Camera, ArrowLeft } from 'lucide-react';
+import { Camera, ArrowLeft, ChevronDown } from 'lucide-react';
 
 // Fix: Cast motion to any to resolve property existence type errors for SVG and HTML motion elements
 const motion = motionComponent as any;
@@ -17,8 +17,11 @@ const Hero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // 1. MOTION VALUES
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+  // Initialize cursor window near the header (Right of center, slightly above)
+  const initialX = typeof window !== 'undefined' ? (window.innerWidth / 2) + 775 : 0;
+  const initialY = typeof window !== 'undefined' ? (window.innerHeight / 2) - 190 : 0;
+  const mouseX = useMotionValue(initialX);
+  const mouseY = useMotionValue(initialY);
   const velocity = useMotionValue(0);
   const lastMousePos = useRef({ x: 0, y: 0 });
 
@@ -361,6 +364,11 @@ const Hero: React.FC = () => {
                 <p className="text-lg md:text-3xl text-charcoal/60 font-sans tracking-tight">
                   Product and Growth, Based in San Francisco.
                 </p>
+
+                {/* Scroll Indicator - Bottom Middle */}
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-charcoal/20">
+                  <ChevronDown size={32} strokeWidth={1.5} />
+                </div>
               </div>
             </foreignObject>
           </motion.g>
@@ -385,6 +393,11 @@ const Hero: React.FC = () => {
           <p className="text-lg text-charcoal/60 font-sans tracking-tight">
             Product and Growth, Based in San Francisco.
           </p>
+
+          {/* Scroll Indicator - Bottom Middle */}
+          <div className="absolute bottom-7 left-1/2 -translate-x-1/2 text-charcoal/20">
+            <ChevronDown size={32} strokeWidth={1.5} />
+          </div>
         </div>
       )}
 
@@ -403,7 +416,7 @@ const Hero: React.FC = () => {
           )}
         </AnimatePresence>
       </div>
-    </section>
+    </section >
   );
 };
 

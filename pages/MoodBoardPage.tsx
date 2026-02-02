@@ -226,7 +226,7 @@ const MoodBoardPage: React.FC = () => {
                   />
                 </div>
                 <div className="mt-8 text-[10px] uppercase tracking-[0.5em] text-white/40 font-bold">
-                  Compiling Inspirations
+                  Loading Canvas...
                 </div>
               </div>
             </div>
@@ -260,7 +260,7 @@ const MoodBoardPage: React.FC = () => {
       </motion.div>
 
       <div className="fixed bottom-12 left-12 pointer-events-none z-50 mix-blend-difference">
-        <span className="text-[10px] uppercase tracking-[0.6em] text-white/50 font-black">Archive V.04 // Drag to Explore</span>
+        <span className="text-[10px] uppercase tracking-[0.6em] text-white/50 font-black">Drag or scroll to explore</span>
       </div>
 
       <style>{`

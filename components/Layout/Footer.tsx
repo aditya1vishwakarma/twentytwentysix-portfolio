@@ -6,7 +6,7 @@ const Footer: React.FC = () => {
   return (
     <footer id="contact" className="bg-background pt-24 pb-12 px-6 md:px-12 border-t border-charcoal/10">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8">
-        
+
         <div className="md:col-span-4 flex flex-col justify-between h-full">
           <div>
             <h2 className="font-serif text-3xl mb-4">Feel free to reach out!</h2>
@@ -39,7 +39,7 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="md:col-span-12 mt-16 pt-8 border-t border-charcoal/5 flex flex-col md:flex-row justify-between items-center text-sm text-charcoal/40">
-          <p>Designed by Aditya, Built by Gemini</p>
+          <p>Designed by Aditya, Built with Antigravity</p>
           <p> California {new Date().getFullYear()}</p>
         </div>
       </div>
