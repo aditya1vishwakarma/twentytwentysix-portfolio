@@ -17,9 +17,10 @@ const Hero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // 1. MOTION VALUES
-  // Initialize cursor window near the header (Right of center, slightly above)
-  const initialX = typeof window !== 'undefined' ? (window.innerWidth / 2) + 775 : 0;
-  const initialY = typeof window !== 'undefined' ? (window.innerHeight / 2) - 190 : 0;
+  // Initialize cursor window relative to viewport size (85% width, 25% height)
+  // This ensures consistent placement across different screen sizes
+  const initialX = typeof window !== 'undefined' ? window.innerWidth * 0.85 : 0;
+  const initialY = typeof window !== 'undefined' ? window.innerHeight * 0.25 : 0;
   const mouseX = useMotionValue(initialX);
   const mouseY = useMotionValue(initialY);
   const velocity = useMotionValue(0);
