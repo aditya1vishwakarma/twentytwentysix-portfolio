@@ -48,7 +48,7 @@ const About: React.FC = () => {
             },
             {
               title: "Mood Board",
-              content: "A collection of textures, typography, and interfaces that inspire my work and shape my design philosophy.",
+              content: "A collection of images, projects, and interfaces that inspire my work and shape my aesthetic taste.",
               isInteractive: true,
               path: "/moodboard"
             }
