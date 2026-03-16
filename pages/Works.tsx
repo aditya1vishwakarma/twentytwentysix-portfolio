@@ -50,6 +50,9 @@ const Works: React.FC = () => {
             <h2 className="font-serif text-3xl text-charcoal/40">
               Archived Projects
             </h2>
+            <p className="text-charcoal/40 text-sm mt-1">
+              Unfinished/Undeveloped projects
+            </p>
           </header>
 
           <div className="flex flex-col">
