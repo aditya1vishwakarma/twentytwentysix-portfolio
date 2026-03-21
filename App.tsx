@@ -5,7 +5,7 @@ import { AnimatePresence } from 'framer-motion';
 import Home from './pages/Home';
 import Works from './pages/Works';
 import Blog from './pages/Blog';
-import MoodBoardPage from './pages/MoodBoardPage';
+import MoodBoardV2Page from './pages/MoodBoardV2Page';
 import Navbar from './components/Layout/Navbar';
 import Footer from './components/Layout/Footer';
 
@@ -43,7 +43,7 @@ const ScrollToTop = () => {
 
 const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
-  const isMoodBoard = location.pathname === '/moodboard';
+  const isMoodBoard = location.pathname === '/moodboard' || location.pathname === '/moodboard-v2';
 
   return (
     <div className="min-h-screen bg-background text-charcoal font-sans selection:bg-moss selection:text-white overflow-x-hidden">
@@ -65,7 +65,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/works" element={<Works />} />
           <Route path="/blog" element={<Blog />} />
-          <Route path="/moodboard" element={<MoodBoardPage />} />
+          <Route path="/moodboard" element={<MoodBoardV2Page />} />
 
           {/* Project Routes */}
           <Route path="/works/alpine-retreat" element={<AlpineRetreat />} />
