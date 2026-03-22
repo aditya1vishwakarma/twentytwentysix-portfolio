@@ -166,7 +166,7 @@ const MoodBoardPage: React.FC = () => {
       {/* Home Button: Styled, Large, Top Right */}
       <Link
         to="/#about"
-        className="fixed top-8 right-8 z-[250] font-instrument italic text-4xl px-12 py-5 text-[#FBFAF8] bg-white/5 border border-white/10 rounded-full backdrop-blur-xl hover:bg-white/15 hover:border-white/30 transition-all duration-500 shadow-2xl active:scale-95"
+        className="fixed top-8 right-8 z-[250] font-serif italic font-medium text-4xl px-12 py-5 text-[#FBFAF8] bg-white/5 border border-white/10 rounded-full backdrop-blur-xl hover:bg-white/15 hover:border-white/30 transition-all duration-500 shadow-2xl active:scale-95"
       >
         Home
       </Link>
@@ -214,7 +214,7 @@ const MoodBoardPage: React.FC = () => {
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="relative text-center">
                 <motion.div
-                  className="font-instrument italic text-[#FBFAF8] leading-none"
+                  className="font-serif italic font-medium text-[#FBFAF8] leading-none"
                   style={{ fontSize: 'clamp(80px, 15vw, 240px)' }}
                 >
                   {Math.round(progress)}%

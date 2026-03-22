@@ -54,7 +54,7 @@ const WorkCarousel: React.FC = () => {
       {/* Header */}
       <div className="max-w-7xl mx-auto w-full px-6 mb-12 flex justify-between items-end">
         <h2 className="text-5xl md:text-6xl font-serif text-charcoal">
-          Selected <span className="italic font-instrument text-moss">Works</span>
+          Selected <span className="text-[#3F6D0D] font-serif font-normal tracking-[-0.02em]">Works</span>
         </h2>
         <div className="flex flex-col items-end gap-2 hidden md:flex">
           <Link

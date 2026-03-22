@@ -227,7 +227,7 @@ const Hero: React.FC = () => {
                   </button>
                   <div>
                     <h2 className="font-serif text-2xl text-charcoal tracking-tight">
-                      Aditya <span className="text-moss font-instrument italic font-normal">Vishwakarma</span>
+                      Aditya <span className="text-moss font-serif font-normal tracking-[-0.03em]">Vishwakarma</span>
                     </h2>
                     <p className="font-serif text-sm text-charcoal/60 mt-1">
                       Hobbyist photographer
@@ -239,7 +239,7 @@ const Hero: React.FC = () => {
                 <div className="max-w-7xl mx-auto w-full flex justify-between items-center">
                   <div>
                     <h2 className="font-serif text-2xl md:text-3xl text-charcoal tracking-tight">
-                      Aditya <span className="text-moss font-instrument italic font-normal">Vishwakarma</span>
+                      Aditya <span className="text-moss font-serif font-normal tracking-[-0.03em]">Vishwakarma</span>
                     </h2>
                     <p className="font-serif text-sm md:text-base text-charcoal/60 mt-1">
                       I am also a hobbyist photographer, here are some of my favorites.
@@ -359,7 +359,7 @@ const Hero: React.FC = () => {
             <foreignObject x="0" y="0" width="100%" height="100%">
               <div className="flex flex-col justify-center items-center h-full w-full text-center px-4">
                 <h1 className="font-serif leading-none text-charcoal mb-4 whitespace-nowrap text-[clamp(2.5rem,8.5vw,11rem)]">
-                  Aditya <span className="text-moss font-instrument italic font-normal">Vishwakarma</span>
+                  Aditya <span className="text-moss font-serif font-normal tracking-[-0.02em]">Vishwakarma</span>
                 </h1>
                 <div className="w-24 md:w-32 h-[1px] bg-charcoal/20 mx-auto mb-10" />
                 <p className="text-lg md:text-3xl text-charcoal/60 font-sans tracking-tight">
@@ -388,7 +388,7 @@ const Hero: React.FC = () => {
           </button>
 
           <h1 className="font-serif leading-none text-charcoal mb-4 whitespace-nowrap text-[clamp(2.5rem,8.5vw,11rem)]">
-            Aditya <span className="text-moss font-instrument italic font-normal">Vishwakarma</span>
+            Aditya <span className="text-moss font-serif font-normal tracking-[-0.02em]">Vishwakarma</span>
           </h1>
           <div className="w-24 h-[1px] bg-charcoal/20 mx-auto mb-10" />
           <p className="text-lg text-charcoal/60 font-sans tracking-tight">

@@ -35,29 +35,64 @@ function usePreloadTextures(items: MoodBoardItem[]) {
     };
 
     items.forEach((item) => {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
+      const isVideo = item.imageUrl.toLowerCase().match(/\.(mp4|webm)$/i);
 
-      img.onload = () => {
-        if (cancelled) return;
-        const tex = new THREE.Texture(img);
-        tex.needsUpdate = true;
-        tex.colorSpace = THREE.SRGBColorSpace;
-        map.set(item.imageUrl, tex);
-        onDone();
-      };
+      if (isVideo) {
+        const vid = document.createElement('video');
+        vid.crossOrigin = 'anonymous';
+        vid.loop = true;
+        vid.muted = true;
+        vid.playsInline = true;
+        vid.autoplay = true;
 
-      img.onerror = () => {
-        // Count as loaded even on error so progress reaches 100%
-        onDone();
-      };
+        // Use onloadeddata or oncanplay to trigger completion
+        vid.onloadeddata = () => {
+          if (cancelled) return;
+          const tex = new THREE.VideoTexture(vid);
+          tex.colorSpace = THREE.SRGBColorSpace;
+          map.set(item.imageUrl, tex);
+          onDone();
+        };
 
-      img.src = item.imageUrl;
+        vid.onerror = () => {
+          onDone();
+        };
+
+        vid.src = item.imageUrl;
+        vid.load();
+        vid.play().catch(() => {}); // Attempt autoplay to ensure it buffers properly
+      } else {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+
+        img.onload = () => {
+          if (cancelled) return;
+          const tex = new THREE.Texture(img);
+          tex.needsUpdate = true;
+          tex.colorSpace = THREE.SRGBColorSpace;
+          map.set(item.imageUrl, tex);
+          onDone();
+        };
+
+        img.onerror = () => {
+          onDone();
+        };
+
+        img.src = item.imageUrl;
+      }
     });
 
     return () => {
       cancelled = true;
-      map.forEach((tex) => tex.dispose());
+      map.forEach((tex) => {
+        if ((tex as any).isVideoTexture && tex.image) {
+          const vid = tex.image as HTMLVideoElement;
+          vid.pause();
+          vid.removeAttribute('src');
+          vid.load();
+        }
+        tex.dispose();
+      });
     };
   }, []); // Only run once
 
@@ -299,7 +334,7 @@ const MoodBoardV2Page: React.FC = () => {
             <div className="relative text-center flex flex-col items-center">
               {/* Large percentage */}
               <motion.div
-                className="font-instrument italic text-charcoal/90 leading-none"
+                className="font-serif italic font-medium text-charcoal/90 leading-none"
                 style={{ fontSize: 'clamp(64px, 12vw, 180px)' }}
               >
                 {Math.round(progress)}%
@@ -312,11 +347,6 @@ const MoodBoardV2Page: React.FC = () => {
                   className="absolute inset-0 bg-[#3F6D0D] rounded-full"
                   transition={{ duration: 0.3 }}
                 />
-              </div>
-
-              {/* Status text */}
-              <div className="mt-6 text-[10px] uppercase tracking-[0.5em] text-charcoal/30 font-semibold">
-                Loading {loadedCount} of {total} panes
               </div>
             </div>
           </motion.div>
@@ -345,7 +375,7 @@ const MoodBoardV2Page: React.FC = () => {
 
         <Link
           to="/#about"
-          className="pointer-events-auto font-instrument italic text-2xl px-8 py-3 text-charcoal bg-charcoal/5 border border-charcoal/10 rounded-full backdrop-blur-xl hover:bg-charcoal/10 hover:border-charcoal/20 transition-all duration-500 shadow-lg active:scale-95"
+          className="pointer-events-auto flex items-center justify-center text-center min-w-[120px] font-serif italic font-medium text-2xl px-6 py-3 text-charcoal bg-charcoal/5 border border-charcoal/10 rounded-[22px] backdrop-blur-xl hover:bg-charcoal/10 hover:border-charcoal/20 transition-all duration-500 shadow-lg active:scale-95"
         >
           Home
         </Link>
@@ -433,17 +463,17 @@ const MoodBoardV2Page: React.FC = () => {
           return (
             <motion.div
               key="detail-panel"
-              initial={{ y: '100%', opacity: 0 }}
+              initial={{ y: '50%', opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              exit={{ y: '100%', opacity: 0 }}
+              exit={{ y: '10%', opacity: 0 }}
               transition={{ type: 'spring', stiffness: 340, damping: 38 }}
               className="fixed bottom-6 left-6 z-40 w-[90vw] md:w-[420px] overflow-hidden"
               style={{
                 maxHeight: maxH,
                 borderRadius: '38px',
-                background: 'rgba(17, 17, 17, 0.70)',
-                backdropFilter: 'blur(40px)',
-                WebkitBackdropFilter: 'blur(40px)',
+                background: 'rgba(17, 17, 17, 0.10)',
+                backdropFilter: 'blur(5px)',
+                WebkitBackdropFilter: 'blur(5px)',
               }}
               onClick={(e: React.MouseEvent) => e.stopPropagation()}
             >

@@ -22,7 +22,7 @@ const About: React.FC = () => {
             transition={{ duration: 0.8 }}
           >
             <h2 className="font-serif text-[clamp(2.5rem,7vw,4.5rem)] text-charcoal mb-8 leading-none tracking-tight">
-              About <span className="text-[#3F6D0D] font-instrument italic font-normal">Aditya</span>
+              About <span className="text-[#3F6D0D] font-serif font-normal tracking-[-0.02em]">Aditya</span>
             </h2>
             <p className="text-xl md:text-2xl leading-relaxed text-charcoal/80 max-w-2xl font-sans">
               A multidisciplinary APM bridging functionality with aesthetics that impacts high-growth digital strategy. Based in San Francisco, creating at the intersection of art and technology.

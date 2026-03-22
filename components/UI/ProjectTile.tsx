@@ -12,9 +12,7 @@ const ProjectTile: React.FC<ProjectTileProps> = ({ project }) => {
     return (
         <Link to={project.path} className="group block relative w-full">
             <motion.div
-                whileHover={{ scale: 1.02, y: -5 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-                className="w-full bg-white shadow-sm hover:shadow-xl transition-all duration-200"
+                className="w-full bg-white shadow-sm transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1.0)] group-hover:scale-[1.02] group-hover:-translate-y-1 group-hover:shadow-xl group-hover:border-moss/30 border border-transparent"
             >
                 {/* Image Container - No Radius */}
                 <div className="relative aspect-[4/3] w-full overflow-hidden">

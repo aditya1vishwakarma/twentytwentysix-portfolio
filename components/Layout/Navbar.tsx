@@ -64,7 +64,7 @@ const Navbar: React.FC = () => {
                 className="font-serif text-xl md:text-2xl tracking-tight text-charcoal group whitespace-nowrap"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Aditya <span className="text-moss font-instrument italic font-normal">Vishwakarma</span>
+                Aditya <span className="text-moss font-serif font-normal tracking-[-0.02em]">Vishwakarma</span>
               </Link>
 
               {/* DESKTOP NAV */}
