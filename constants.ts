@@ -134,7 +134,7 @@ export const MOOD_BOARD: MoodBoardItem[] = [
   { id: '10', title: 'Dry Earth', imageUrl: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=800', tags: ['Cracks', 'Drought', 'Pattern'], description: 'Fractal patterns emerge when water retreats.', orientation: 'landscape' },
 
   // ── 11–15: Design & Typography ──
-  { id: '11', title: 'Swiss Grid', imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=80&w=800', tags: ['Grid', 'Swiss', 'System'], description: 'Order from restraint — the international typographic style.', orientation: 'portrait' },
+  { id: '11', title: 'The iPad 2', imageUrl: 'https://pub-9c95b4d2e81345c4a46a362747b32ea6.r2.dev/mood%20board/iPad-2-ad.avif', tags: ['Grid', 'Swiss', 'System'], description: 'This was the first iPad that I ever got. The thin design that formed around your hands along with the magnetic smart folio got my 13 year-old self extremely excited.', orientation: 'landscape', link: 'https://support.apple.com/en-us/111990' },
   { id: '12', title: 'Neon Glow', imageUrl: 'https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=800', tags: ['Neon', 'Night', 'Glow'], description: 'Electric light as medium — signage as art.', orientation: 'landscape' },
   { id: '13', title: 'Ink on Paper', imageUrl: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=800', tags: ['Ink', 'Print', 'Craft'], description: 'The weight of a single mark on an empty page.', orientation: 'portrait' },
   { id: '14', title: 'Color Swatch', imageUrl: 'https://images.unsplash.com/photo-1525909002-1b05e0c869d8?q=80&w=800', tags: ['Color', 'Palette', 'System'], description: 'Curated hues speaking in harmony.', orientation: 'landscape' },
