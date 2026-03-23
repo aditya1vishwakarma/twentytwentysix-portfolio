@@ -19,8 +19,8 @@ const Hero: React.FC = () => {
   // 1. MOTION VALUES
   // Initialize cursor window relative to viewport size (85% width, 25% height)
   // This ensures consistent placement across different screen sizes
-  const initialX = typeof window !== 'undefined' ? window.innerWidth * 0.85 : 0;
-  const initialY = typeof window !== 'undefined' ? window.innerHeight * 0.25 : 0;
+  const initialX = typeof window !== 'undefined' ? window.innerWidth * 0.745 : 0;
+  const initialY = typeof window !== 'undefined' ? window.innerHeight * 0.265 : 0;
   const mouseX = useMotionValue(initialX);
   const mouseY = useMotionValue(initialY);
   const velocity = useMotionValue(0);
@@ -244,10 +244,10 @@ const Hero: React.FC = () => {
                     <p className="font-serif text-sm md:text-base text-charcoal/60 mt-1">
                       I am also a hobbyist photographer, here are some of my favorites.
                     </p>
-                  </div>
+                  </div >
                   <motion.button
                     onClick={handleHide}
-                    className="px-6 py-2.5 bg-charcoal text-white rounded-full font-sans text-xs tracking-widest uppercase hover:bg-moss transition-all active:scale-95 shadow-lg"
+                    className="px-8 py-3 bg-moss text-white rounded-full font-sans text-sm tracking-[0.06em] uppercase hover:bg-charcoal transition-all shadow-2xl active:scale-95"
                   >
                     Hide
                   </motion.button>
@@ -357,18 +357,46 @@ const Hero: React.FC = () => {
             <rect x="0" y="0" width="100%" height="100%" fill="#FBFAF8" />
 
             <foreignObject x="0" y="0" width="100%" height="100%">
+              {/* === OLD DESKTOP LAYOUT ===
               <div className="flex flex-col justify-center items-center h-full w-full text-center px-4">
                 <h1 className="font-serif leading-none text-charcoal mb-4 whitespace-nowrap text-[clamp(2.5rem,8.5vw,11rem)]">
                   Aditya <span className="text-moss font-serif font-normal tracking-[-0.02em]">Vishwakarma</span>
                 </h1>
-                <div className="w-24 md:w-32 h-[1px] bg-charcoal/20 mx-auto mb-10" />
                 <p className="text-lg md:text-3xl text-charcoal/60 font-sans tracking-tight">
                   Product and Growth, Based in San Francisco.
                 </p>
 
-                {/* Scroll Indicator - Bottom Middle */}
                 <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-charcoal/20">
                   <ChevronDown size={32} strokeWidth={1.5} />
+                </div>
+              </div>
+              */}
+
+              {/* === NEW DESKTOP LAYOUT === */}
+              <div className="relative h-full w-full">
+                {/* Scroll Indicator - Bottom Middle */}
+                <div className="absolute bottom-[28px] left-1/2 -translate-x-1/2 text-charcoal/20">
+                  <ChevronDown size={32} strokeWidth={1.5} />
+                </div>
+
+                {/* Bottom-Left Stack Container */}
+                <div className="absolute bottom-[60px] left-[60px] flex flex-col items-start whitespace-nowrap">
+
+                  {/* Role Stack */}
+                  <div className="flex flex-col font-sans mb-[clamp(20px,3.6vw,58px)]">
+                    <span className="text-[clamp(14px,2.2vw,28px)] font-medium tracking-[0.02em] leading-[1.4] text-charcoal/70 normal-case">
+                      Product Manager
+                    </span>
+                    <span className="text-[clamp(14px,2.2vw,28px)] font-medium tracking-[0.02em] leading-[1.4] text-charcoal/70 normal-case">
+                      Based in San Francisco
+                    </span>
+                  </div>
+
+                  {/* Name Stack */}
+                  <div className="flex flex-col items-start font-serif font-normal text-[12vw] leading-[0.92] text-charcoal">
+                    <span className="tracking-[-0.04em] -ml-[0.06em]">Aditya</span>
+                    <span className="text-moss tracking-[-0.02em] -ml-[0.05em]">Vishwakarma</span>
+                  </div>
                 </div>
               </div>
             </foreignObject>
@@ -410,7 +438,7 @@ const Hero: React.FC = () => {
             <motion.button
               key="reveal-btn" onClick={handleReveal}
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, scale: 0.9 }}
-              className="px-8 py-3 bg-moss text-white rounded-full font-sans text-sm tracking-widest uppercase hover:bg-charcoal transition-all shadow-2xl active:scale-95"
+              className="px-8 py-3 bg-moss text-white rounded-full font-sans text-sm tracking-[0.01em] uppercase hover:bg-charcoal transition-all shadow-2xl active:scale-95"
             >
               Reveal
             </motion.button>

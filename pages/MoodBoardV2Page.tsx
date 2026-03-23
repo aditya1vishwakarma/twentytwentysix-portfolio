@@ -60,7 +60,7 @@ function usePreloadTextures(items: MoodBoardItem[]) {
 
         vid.src = item.imageUrl;
         vid.load();
-        vid.play().catch(() => {}); // Attempt autoplay to ensure it buffers properly
+        vid.play().catch(() => { }); // Attempt autoplay to ensure it buffers properly
       } else {
         const img = new Image();
         img.crossOrigin = 'anonymous';
@@ -457,9 +457,6 @@ const MoodBoardV2Page: React.FC = () => {
       {/* ──── DETAIL PANEL (bottom-left) ──── */}
       <AnimatePresence>
         {selectedItem && (() => {
-          const isPortrait = selectedItem.orientation === 'portrait';
-          const maxH = isPortrait ? '66vh' : '50vh';
-
           return (
             <motion.div
               key="detail-panel"
@@ -467,37 +464,46 @@ const MoodBoardV2Page: React.FC = () => {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: '10%', opacity: 0 }}
               transition={{ type: 'spring', stiffness: 340, damping: 38 }}
-              className="fixed bottom-6 left-6 z-40 w-[90vw] md:w-[420px] overflow-hidden"
+              className="fixed bottom-6 left-6 z-40 w-[90vw] md:w-[420px]"
               style={{
-                maxHeight: maxH,
-                borderRadius: '38px',
-                background: 'rgba(17, 17, 17, 0.10)',
-                backdropFilter: 'blur(5px)',
-                WebkitBackdropFilter: 'blur(5px)',
+                borderRadius: '28px',
+                padding: '12px',
+                background: 'rgba(251, 250, 248, 0.60)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                boxShadow: '0 8px 16px -4px rgba(0,0,0,0.05), 0 16px 24px -4px rgba(0,0,0,0.05), 0 24px 32px -4px rgba(0,0,0,0.05)'
               }}
               onClick={(e: React.MouseEvent) => e.stopPropagation()}
             >
-              <div className="flex flex-col h-full">
-                <div className="p-3 flex-shrink-0">
-                  <img
-                    src={selectedItem.imageUrl}
-                    alt={selectedItem.title}
-                    className="w-full object-cover"
-                    style={{ borderRadius: '26px' }}
-                  />
+              <div className="flex flex-col">
+                <div className="flex-shrink-0">
+                  <div
+                    className="w-full overflow-hidden"
+                    style={{ borderRadius: '16px' }}
+                  >
+                    <img
+                      src={selectedItem.imageUrl}
+                      alt={selectedItem.title}
+                      className="w-full h-auto max-h-[70vh] object-contain block"
+                    />
+                  </div>
                 </div>
 
                 <div
-                  className="px-6 py-5 flex flex-col gap-3"
+                  className="flex flex-col gap-[5px] flex-shrink-0"
                   style={{
-                    background: '#FBFAF8',
-                    borderRadius: '0 0 38px 38px',
+                    paddingTop: '14px',
+                    paddingBottom: '10px',
+                    paddingLeft: '14px',
+                    paddingRight: '14px',
+                    background: 'transparent',
                   }}
                 >
-                  <h2 className="font-serif text-2xl md:text-3xl text-charcoal leading-tight">
+                  <h2 className="font-serif font-semibold text-[22px] md:text-[24px] text-charcoal leading-tight tracking-tight">
                     {selectedItem.title}
                   </h2>
 
+                  {/* 
                   <div className="flex flex-wrap gap-1.5">
                     {selectedItem.tags.map((tag) => (
                       <span
@@ -508,8 +514,9 @@ const MoodBoardV2Page: React.FC = () => {
                       </span>
                     ))}
                   </div>
+                  */}
 
-                  <p className="text-charcoal/60 text-sm leading-relaxed font-sans">
+                  <p className="text-[#847D72] text-[15px] leading-snug font-sans">
                     {selectedItem.description}
                   </p>
 
