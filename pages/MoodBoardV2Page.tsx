@@ -13,11 +13,18 @@ const motion = motionComponent as any;
 /* ─────────────────────────────────────────────
  * Pre-load all images & create THREE.Textures
  * before the 3D scene even mounts.
- * Returns a Map<imageUrl, THREE.Texture>.
+ *
+ * Strategy: fetch() every image as a blob during
+ * the loading screen. This bypasses the browser's
+ * image cache (which can hold stale non-CORS
+ * entries) and guarantees proper CORS handling.
+ * Blob URLs are kept alive in a ref until unmount
+ * so Three.js can upload them to the GPU lazily.
  * ───────────────────────────────────────────── */
 function usePreloadTextures(items: MoodBoardItem[]) {
   const [textures, setTextures] = useState<Map<string, THREE.Texture>>(new Map());
   const [loadedCount, setLoadedCount] = useState(0);
+  const blobUrlsRef = useRef<string[]>([]); // Keep blobs alive until unmount
   const total = items.length;
 
   useEffect(() => {
@@ -29,9 +36,16 @@ function usePreloadTextures(items: MoodBoardItem[]) {
       count++;
       if (!cancelled) {
         setLoadedCount(count);
-        // Copy map into state on every load so panes get textures as they arrive
         setTextures(new Map(map));
       }
+    };
+
+    // Helper: create a Three.js texture from any img element
+    const makeTexture = (img: HTMLImageElement, srgb: boolean) => {
+      const tex = new THREE.Texture(img);
+      tex.needsUpdate = true;
+      if (srgb) tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
     };
 
     items.forEach((item) => {
@@ -62,28 +76,50 @@ function usePreloadTextures(items: MoodBoardItem[]) {
         vid.load();
         vid.play().catch(() => { }); // Attempt autoplay to ensure it buffers properly
       } else {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-
-        img.onload = () => {
-          if (cancelled) return;
-          const tex = new THREE.Texture(img);
-          tex.needsUpdate = true;
-          tex.colorSpace = THREE.SRGBColorSpace;
-          map.set(item.imageUrl, tex);
-          onDone();
-        };
-
-        img.onerror = () => {
-          onDone();
-        };
-
-        img.src = item.imageUrl;
+        // Fetch as blob so we bypass the browser image cache entirely.
+        // This guarantees we always get a fresh CORS response, not a stale
+        // cached entry that lacks Access-Control headers.
+        fetch(item.imageUrl, { mode: 'cors' })
+          .then((res) => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.blob();
+          })
+          .then((blob) => {
+            if (cancelled) return;
+            const blobUrl = URL.createObjectURL(blob);
+            // Store the blob URL so it stays alive until this component
+            // unmounts — Three.js uploads textures to the GPU lazily,
+            // and the img element must remain valid until that happens.
+            blobUrlsRef.current.push(blobUrl);
+            const img = new Image();
+            img.onload = () => {
+              if (cancelled) return;
+              map.set(item.imageUrl, makeTexture(img, true));
+              onDone();
+            };
+            img.onerror = () => onDone();
+            img.src = blobUrl;
+          })
+          .catch(() => {
+            // fetch failed (network / CORS) — fall back to direct img load
+            if (cancelled) return onDone();
+            const img = new Image();
+            img.onload = () => {
+              if (cancelled) return;
+              map.set(item.imageUrl, makeTexture(img, false));
+              onDone();
+            };
+            img.onerror = () => onDone();
+            img.src = item.imageUrl;
+          });
       }
     });
 
     return () => {
       cancelled = true;
+      // Revoke all blob URLs now that we're done
+      blobUrlsRef.current.forEach((u) => URL.revokeObjectURL(u));
+      blobUrlsRef.current = [];
       map.forEach((tex) => {
         if ((tex as any).isVideoTexture && tex.image) {
           const vid = tex.image as HTMLVideoElement;
