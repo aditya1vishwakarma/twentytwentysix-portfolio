@@ -1,1 +1,13 @@
 @import "tailwindcss";
+
+@theme {
+  --color-background: #FBFAF8;
+  --color-charcoal: #333333;
+  --color-moss: #3F6D0D;
+  --color-moss-light: #4A7A15;
+
+  --font-sans: "Nimbus Sans L", sans-serif;
+  --font-serif: "Newsreader", serif;
+
+  --radius-squircle: 24px;
+}
