@@ -28,8 +28,8 @@ const Hero: React.FC = () => {
 
   // 2. PHYSICS FOR FLUID BLOBS
   const springMain = { stiffness: 400, damping: 40, mass: 0.5 };
-  const springTrail = { stiffness: 180, damping: 25, mass: 1 };
-  const springSlow = { stiffness: 100, damping: 20, mass: 1.5 };
+  const springTrail = { stiffness: 180, damping: 26, mass: 1 };
+  const springSlow = { stiffness: 100, damping: 23, mass: 1.5 };
 
   const smoothX = useSpring(mouseX, springMain);
   const smoothY = useSpring(mouseY, springMain);
@@ -346,7 +346,7 @@ const Hero: React.FC = () => {
             <mask id="hero-mask">
               <rect x="0" y="0" width="100%" height="100%" fill="white" />
               <g filter="url(#goo)">
-                <motion.circle cx={smoothX} cy={smoothY} r={100} fill="black" style={{ scale: blobScale }} />
+                <motion.circle cx={mouseX} cy={mouseY} r={100} fill="black" style={{ scale: blobScale }} />
                 <motion.circle cx={trailX} cy={trailY} r={80} fill="black" />
                 <motion.circle cx={slowX} cy={slowY} r={60} fill="black" />
               </g>
@@ -357,21 +357,6 @@ const Hero: React.FC = () => {
             <rect x="0" y="0" width="100%" height="100%" fill="#FBFAF8" />
 
             <foreignObject x="0" y="0" width="100%" height="100%">
-              {/* === OLD DESKTOP LAYOUT ===
-              <div className="flex flex-col justify-center items-center h-full w-full text-center px-4">
-                <h1 className="font-serif leading-none text-charcoal mb-4 whitespace-nowrap text-[clamp(2.5rem,8.5vw,11rem)]">
-                  Aditya <span className="text-moss font-serif font-normal tracking-[-0.02em]">Vishwakarma</span>
-                </h1>
-                <p className="text-lg md:text-3xl text-charcoal/60 font-sans tracking-tight">
-                  Product and Growth, Based in San Francisco.
-                </p>
-
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-charcoal/20">
-                  <ChevronDown size={32} strokeWidth={1.5} />
-                </div>
-              </div>
-              */}
-
               {/* === NEW DESKTOP LAYOUT === */}
               <div className="relative h-full w-full">
                 {/* Scroll Indicator - Bottom Middle */}
@@ -420,7 +405,7 @@ const Hero: React.FC = () => {
           </h1>
           <div className="w-24 h-[1px] bg-charcoal/20 mx-auto mb-10" />
           <p className="text-lg text-charcoal/60 font-sans tracking-tight">
-            Product and Growth, Based in San Francisco.
+            Product Manager Based in San Francisco.
           </p>
 
           {/* Scroll Indicator - Bottom Middle */}

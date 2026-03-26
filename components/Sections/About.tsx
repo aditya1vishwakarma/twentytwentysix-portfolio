@@ -14,41 +14,42 @@ const About: React.FC = () => {
       <div className="max-w-7xl mx-auto">
 
         {/* Header / Intro Section */}
-        <div className="mb-16 md:mb-24">
+        <div className="mb-12 md:mb-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="font-serif text-[clamp(2.5rem,7vw,4.5rem)] text-charcoal mb-8 leading-none tracking-tight">
+            <h2 className="font-serif text-[clamp(2.5rem,7vw,4.5rem)] text-charcoal mb-6 leading-none tracking-tight">
               About <span className="text-[#3F6D0D] font-serif font-normal tracking-[-0.02em]">Aditya</span>
             </h2>
-            <p className="text-xl md:text-2xl leading-relaxed text-charcoal/80 max-w-2xl font-sans">
-              A multidisciplinary APM bridging functionality with aesthetics that impacts high-growth digital strategy. Based in San Francisco, creating at the intersection of art and technology.
+            <p className="text-xl md:text-xl leading-relaxed text-charcoal/80 max-w-lg font-sans">
+              Multidisciplinary APM. I fundamentally believe building great things start with the user experience and every decision we make is in service to that.
+              <br /> Currently helping marketing teams scale growth via digital platforms.
             </p>
           </motion.div>
         </div>
 
         {/* Structural Keyline */}
-        <div className="w-full h-[1px] bg-charcoal/10 mb-12" />
+        <div className="w-full h-[1px] bg-charcoal/10 mb-10" />
 
         {/* Unboxed 3-Column Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 items-stretch">
           {[
             {
               title: "My approach to the \"how\"",
-              content: "Rooted in the invisible. I believe design should function effortlessly like a natural ecosystem—providing calm and clarity amidst the chaos of complex data and high-velocity growth.",
+              content: "Bridge the gap of user experience with human intuition as guidance and data as my backup. The final output has to be a natural evolution that is as functional as it is beautiful.",
               isInteractive: false
             },
             {
               title: "My approach to the \"what\"",
-              content: "Stripping away the noise to reveal the core intent. My methodology utilizes strict grid systems and typographic hierarchy to build products that are as performant as they are beautiful.",
+              content: "Solve the user's problem. Find the signal in the noise, define the product's core issue. and ensuring every design decision is in service of a singular, impactful user experience.",
               isInteractive: false
             },
             {
               title: "Mood Board",
-              content: "A collection of images, projects, and interfaces that inspire my work and shape my aesthetic taste.",
+              content: "A collection of artifacts, interfaces, and projects that define my aesthetic and standards. Curated inspiration.",
               isInteractive: true,
               path: "/moodboard"
             }

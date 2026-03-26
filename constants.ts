@@ -154,8 +154,8 @@ export const MOOD_BOARD: MoodBoardItem[] = [
   { id: '24', title: 'Silhouette', imageUrl: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=800', tags: ['Dark', 'Shape', 'Outline'], description: 'Identity reduced to its most essential contour.', orientation: 'portrait' },
   { id: '25', title: 'Candlelight', imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800', tags: ['Flame', 'Warm', 'Intimate'], description: 'The oldest form of artificial light.', orientation: 'landscape' },
 
-  // ── 26–30: Urban & Street ──
-  { id: '26', title: 'Tokyo Alley', imageUrl: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=800', tags: ['Japan', 'Neon', 'Street'], description: 'Density as energy — compressed urban beauty.', orientation: 'portrait' },
+  // ── 26–30: Urban & Street ──`
+  { id: '26', title: 'Chronograph Watches', imageUrl: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=800', tags: ['Japan', 'Neon', 'Street'], description: 'Density as energy — compressed urban beauty.', orientation: 'landscape', link: 'https://revolutionwatch.com/the-complete-guide-to-patek-philippe-vintage-chronographs/' },
   { id: '27', title: 'Subway Tile', imageUrl: 'https://images.unsplash.com/photo-1517732306149-e8f829eb588a?q=80&w=800', tags: ['Tile', 'Grid', 'Underground'], description: 'Repeating geometry beneath the city.', orientation: 'landscape' },
   { id: '28', title: 'Fire Escape', imageUrl: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?q=80&w=800', tags: ['Metal', 'Urban', 'Pattern'], description: 'Functional iron rendered beautiful through repetition.', orientation: 'portrait' },
   { id: '29', title: 'Crosswalk', imageUrl: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=800', tags: ['Lines', 'Motion', 'City'], description: 'The rhythm of movement painted on asphalt.', orientation: 'landscape' },
