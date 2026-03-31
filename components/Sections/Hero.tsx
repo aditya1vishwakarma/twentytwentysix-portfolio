@@ -42,9 +42,9 @@ const Hero: React.FC = () => {
   // 3. DYNAMIC PARAMETERS
   const mainRadius = useTransform(velocity, [0, 2000], [100, 130]);
 
-  const maskImage = useMotionTemplate`radial-gradient(circle ${mainRadius}px at ${smoothX}px ${smoothY}px, transparent 0%, transparent 90%, black 100%), 
-  radial-gradient(circle 80px at ${trailX}px ${trailY}px, transparent 0%, transparent 90%, black 100%), 
-  radial-gradient(circle 60px at ${slowX}px ${slowY}px, transparent 0%, transparent 90%, black 100%)`;
+  const maskImage = useMotionTemplate`radial-gradient(circle ${mainRadius}px at ${smoothX}px ${smoothY}px, transparent 0%, transparent 100%, black 100%), 
+  radial-gradient(circle 80px at ${trailX}px ${trailY}px, transparent 0%, transparent 100%, black 100%), 
+  radial-gradient(circle 60px at ${slowX}px ${slowY}px, transparent 0%, transparent 100%, black 100%)`;
 
   const movementBuffer = useRef<{ x: number; y: number; time: number }[]>([]);
 
