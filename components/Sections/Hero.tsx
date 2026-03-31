@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion as motionComponent, AnimatePresence, useMotionValue, useSpring, useTransform, useAnimationFrame } from 'framer-motion';
+import { motion as motionComponent, AnimatePresence, useMotionValue, useSpring, useTransform, useAnimationFrame, useMotionTemplate } from 'framer-motion';
 import { Camera, ArrowLeft, ChevronDown } from 'lucide-react';
 
 // Fix: Cast motion to any to resolve property existence type errors for SVG and HTML motion elements
@@ -15,6 +15,7 @@ const Hero: React.FC = () => {
   // const [ripples, setRipples] = useState<{ id: number; x: number; y: number }[]>([]);
   // const mobileTapCount = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(true);
 
   // 1. MOTION VALUES
   // Initialize cursor window relative to viewport size (85% width, 25% height)
@@ -39,7 +40,11 @@ const Hero: React.FC = () => {
   const slowY = useSpring(mouseY, springSlow);
 
   // 3. DYNAMIC PARAMETERS
-  const blobScale = useTransform(velocity, [0, 2000], [1, 1.3]);
+  const mainRadius = useTransform(velocity, [0, 2000], [100, 130]);
+
+  const maskImage = useMotionTemplate`radial-gradient(circle ${mainRadius}px at ${smoothX}px ${smoothY}px, transparent 0%, transparent 90%, black 100%), 
+  radial-gradient(circle 80px at ${trailX}px ${trailY}px, transparent 0%, transparent 90%, black 100%), 
+  radial-gradient(circle 60px at ${slowX}px ${slowY}px, transparent 0%, transparent 90%, black 100%)`;
 
   const movementBuffer = useRef<{ x: number; y: number; time: number }[]>([]);
 
@@ -130,6 +135,17 @@ const Hero: React.FC = () => {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // GPU layer promotion: only while hero is in viewport
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInView(entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
   }, []);
 
   // Lightbox navigation
@@ -334,59 +350,48 @@ const Hero: React.FC = () => {
         </AnimatePresence>
       </div>
 
-      {/* LAYER 2: THE SVG OVERLAY (cursor animation - desktop only) */}
+      {/* LAYER 2: CSS-MASKED OVERLAY (cursor animation - desktop only) */}
       {!isMobile && (
-        <svg className="absolute inset-0 z-10 w-full h-full pointer-events-none" preserveAspectRatio="none">
-          <defs>
-            <filter id="goo">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="15" result="blur" />
-              <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 25 -12" result="goo" />
-            </filter>
+        <motion.div
+          className="absolute inset-0 z-10 pointer-events-none"
+          style={{
+            WebkitMaskImage: maskImage,
+            maskImage: maskImage,
+            WebkitMaskComposite: 'source-in, source-in',
+            maskComposite: 'intersect, intersect',
+            willChange: isInView ? '-webkit-mask-image, mask-image' : 'auto',
+          }}
+          animate={{ opacity: isFullyRevealed ? 0 : 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="absolute inset-0 bg-[#FBFAF8]" />
+          <div className="relative h-full w-full">
+            {/* Scroll Indicator - Bottom Middle */}
+            <div className="absolute bottom-[28px] left-1/2 -translate-x-1/2 text-charcoal/20">
+              <ChevronDown size={32} strokeWidth={1.5} />
+            </div>
 
-            <mask id="hero-mask">
-              <rect x="0" y="0" width="100%" height="100%" fill="white" />
-              <g filter="url(#goo)">
-                <motion.circle cx={mouseX} cy={mouseY} r={100} fill="black" style={{ scale: blobScale }} />
-                <motion.circle cx={trailX} cy={trailY} r={80} fill="black" />
-                <motion.circle cx={slowX} cy={slowY} r={60} fill="black" />
-              </g>
-            </mask>
-          </defs>
+            {/* Bottom-Left Stack Container */}
+            <div className="absolute bottom-[60px] left-[60px] flex flex-col items-start whitespace-nowrap">
 
-          <motion.g mask="url(#hero-mask)" animate={{ opacity: isFullyRevealed ? 0 : 1 }} transition={{ duration: 0.8 }}>
-            <rect x="0" y="0" width="100%" height="100%" fill="#FBFAF8" />
-
-            <foreignObject x="0" y="0" width="100%" height="100%">
-              {/* === NEW DESKTOP LAYOUT === */}
-              <div className="relative h-full w-full">
-                {/* Scroll Indicator - Bottom Middle */}
-                <div className="absolute bottom-[28px] left-1/2 -translate-x-1/2 text-charcoal/20">
-                  <ChevronDown size={32} strokeWidth={1.5} />
-                </div>
-
-                {/* Bottom-Left Stack Container */}
-                <div className="absolute bottom-[60px] left-[60px] flex flex-col items-start whitespace-nowrap">
-
-                  {/* Role Stack */}
-                  <div className="flex flex-col font-sans mb-[clamp(20px,3.6vw,58px)]">
-                    <span className="text-[clamp(14px,2.2vw,28px)] font-medium tracking-[0.02em] leading-[1.4] text-charcoal/70 normal-case">
-                      Product Manager
-                    </span>
-                    <span className="text-[clamp(14px,2.2vw,28px)] font-medium tracking-[0.02em] leading-[1.4] text-charcoal/70 normal-case">
-                      Based in San Francisco
-                    </span>
-                  </div>
-
-                  {/* Name Stack */}
-                  <div className="flex flex-col items-start font-serif font-normal text-[12vw] leading-[0.92] text-charcoal">
-                    <span className="tracking-[-0.04em] -ml-[0.06em]">Aditya</span>
-                    <span className="text-moss tracking-[-0.02em] -ml-[0.05em]">Vishwakarma</span>
-                  </div>
-                </div>
+              {/* Role Stack */}
+              <div className="flex flex-col font-sans mb-[clamp(20px,3.6vw,58px)]">
+                <span className="text-[clamp(14px,2.2vw,28px)] font-medium tracking-[0.02em] leading-[1.4] text-charcoal/70 normal-case">
+                  Product Manager
+                </span>
+                <span className="text-[clamp(14px,2.2vw,28px)] font-medium tracking-[0.02em] leading-[1.4] text-charcoal/70 normal-case">
+                  Based in San Francisco
+                </span>
               </div>
-            </foreignObject>
-          </motion.g>
-        </svg>
+
+              {/* Name Stack */}
+              <div className="flex flex-col items-start font-serif font-normal text-[12vw] leading-[0.92] text-charcoal">
+                <span className="tracking-[-0.04em] -ml-[0.06em]">Aditya</span>
+                <span className="text-moss tracking-[-0.02em] -ml-[0.05em]">Vishwakarma</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       )}
 
       {/* LAYER 2: STATIC HERO TEXT (mobile only) */}
