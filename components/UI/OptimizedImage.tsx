@@ -10,6 +10,10 @@ interface OptimizedImageProps {
   className?: string;
   aspectRatio?: string;
   priority?: boolean;
+  srcSet?: string;
+  sizes?: string;
+  width?: number | string;
+  height?: number | string;
 }
 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({ 
@@ -17,7 +21,11 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   alt, 
   className = "", 
   aspectRatio = "aspect-square",
-  priority = false 
+  priority = false,
+  srcSet,
+  sizes = "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw",
+  width,
+  height
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState(false);
@@ -45,6 +53,10 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
       <motion.img
         src={src}
+        srcSet={srcSet}
+        sizes={srcSet ? sizes : undefined}
+        width={width}
+        height={height}
         alt={alt}
         loading={priority ? "eager" : "lazy"}
         decoding="async"

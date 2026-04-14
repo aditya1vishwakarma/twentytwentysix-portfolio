@@ -11,3 +11,51 @@
 
     --radius-squircle: 24px;
 }
+
+@layer utilities {
+    /* Fluid typography rules using clamp */
+    .fluid-text-base { font-size: clamp(1rem, 0.95vw + 0.8rem, 1.125rem); }
+    .fluid-text-lg { font-size: clamp(1.125rem, 1.2vw + 0.9rem, 1.25rem); }
+    .fluid-text-xl { font-size: clamp(1.25rem, 1.5vw + 1rem, 1.5rem); }
+    .fluid-text-2xl { font-size: clamp(1.5rem, 2vw + 1rem, 1.875rem); }
+    .fluid-text-3xl { font-size: clamp(1.875rem, 3vw + 1.2rem, 2.25rem); }
+    .fluid-heading-mobile { font-size: clamp(2rem, 4vw + 1rem, 3rem); }
+    .fluid-heading-desktop { font-size: clamp(3rem, 6vw + 1rem, 4.5rem); }
+
+    /* Editorial Grid Container (replaces standard max-w constraints) */
+    .editorial-grid {
+        display: grid;
+        grid-template-columns: 
+            1fr
+            min(100%, 48rem) /* Equivalent to max-w-3xl for the text block */
+            1fr;
+        column-gap: 1.5rem;
+    }
+    
+    /* Child element alignment rules */
+    .editorial-grid > * {
+        grid-column: 2; /* Default is to sit inside the reading column */
+    }
+    .editorial-grid > .full-bleed {
+        grid-column: 1 / -1; /* Break out to full width */
+    }
+    .editorial-grid > .wide-bleed {
+        /* A slightly wider breakpoint than text, perfect for code blocks or moderate images */
+        grid-column: 1 / -1;
+        max-width: 64rem; /* max-w-5xl */
+        margin-inline: auto;
+    }
+
+    /* Wrap helpers for CDN image floating */
+    .wrap-left {
+        float: left;
+        margin-right: 2rem;
+        margin-bottom: 1rem;
+    }
+    .wrap-right {
+        float: right;
+        margin-left: 2rem;
+        margin-bottom: 1rem;
+    }
+    /* Note: Add specific shape-outside via inline style where the image shape is known */
+}
