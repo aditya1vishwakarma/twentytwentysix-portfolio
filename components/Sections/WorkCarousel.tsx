@@ -103,10 +103,25 @@ const WorkCarousel: React.FC = () => {
                 onHoverEnd={() => setHoveredSpineIndex(null)}
                 totalCards={currentProjects.length} // formerly PROJECTS.length
                 onClick={() => goToCard(index)}
+                isMobile={isMobile}
               />
             );
           })}
         </div>
+
+        {/* Mobile iOS-style pagination indicator */}
+        {isMobile && (
+          <div className="absolute -bottom-8 left-0 right-0 flex justify-center items-center gap-2 md:hidden">
+            {PROJECTS.slice(0, 3).map((_, idx) => (
+              <button 
+                key={idx} 
+                onClick={() => goToCard(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+                className={`h-1.5 rounded-full transition-all duration-300 ${activeIndex === idx ? 'w-8 bg-charcoal/80' : 'w-4 bg-charcoal/20 hover:bg-charcoal/40'}`}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -126,6 +141,7 @@ interface CardProps {
   onHoverEnd: () => void;
   totalCards: number;
   onClick: () => void;
+  isMobile: boolean;
 }
 
 const Card: React.FC<CardProps> = ({
@@ -142,23 +158,30 @@ const Card: React.FC<CardProps> = ({
   onHoverEnd,
   totalCards,
   onClick,
+  isMobile,
 }) => {
   // Spine-level hover: only THIS spine fans out
   const spineWidth = isHovered && !isActive ? baseOffset + FAN_OUT_EXTRA : baseOffset;
 
-  // Active card position anchors (stable)
-  const stableLeftSpace = activeIndex * baseOffset;
-  const stableRightSpace = (totalCards - activeIndex - 1) * baseOffset;
+  // On mobile, all "before" cards stack at 0px, and all "behind/after" cards stack at 1*baseOffset from the right.
+  const beforePos = isMobile ? 0 : index * baseOffset;
+  const afterOffset = isMobile ? baseOffset : (totalCards - index) * baseOffset;
+
+  // Active card limits its width based on how many neighbors exist
+  // On desktop: it accounts for ALL cards before and after it.
+  // On mobile: it accounts for max 1 card before and max 1 card after.
+  const stableLeftSpace = isMobile ? Math.min(1, activeIndex) * baseOffset : activeIndex * baseOffset;
+  const stableRightSpace = isMobile ? Math.min(1, totalCards - activeIndex - 1) * baseOffset : (totalCards - activeIndex - 1) * baseOffset;
 
   // Background card positions
   const dynamicBehindLeftPosition = isBehindActive
-    ? `calc(100% - ${(totalCards - index) * baseOffset}px)`
+    ? `calc(100% - ${afterOffset}px)`
     : 'auto';
 
   // Left spines: shift left on hover so they fan OUTWARD
   const leftSpineHoverShift = isBeforeActive && isHovered ? FAN_OUT_EXTRA : 0;
   const dynamicBeforeLeftPosition = isBeforeActive
-    ? `${index * baseOffset - leftSpineHoverShift}px`
+    ? `${beforePos - leftSpineHoverShift}px`
     : 'auto';
 
   // Atmospheric perspective (NO scale change)
