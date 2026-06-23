@@ -24,7 +24,7 @@ const Architextures = () => {
           className="w-full h-[50vh] md:rounded-squircle hidden md:block"
         />
         <OptimizedImage
-          src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600"
+          src="https://pub-9c95b4d2e81345c4a46a362747b32ea6.r2.dev/projectvideos/app%20images.jpg"
           alt="Brutalist concrete architecture"
           className="w-full h-[300px] md:hidden"
         />
@@ -32,7 +32,7 @@ const Architextures = () => {
 
       <div className="mb-16">
         <p className="text-lg leading-relaxed text-charcoal/70 mb-4">
-          Architextures is an app for people who notice these nuances of wonderful architecture aroudn them and want a place to organize them when the native Photos app won't cut it. This is the user persona I created for a very real issue I face in my life.
+          Architextures is an app for people who notice these nuances of wonderful architecture around them and want a place to organize them when the native Photos app won't cut it. This is the user persona I created for a very real issue I face in my life.
         </p>
         <p className="text-lg leading-relaxed text-charcoal/70 mb-4">
           The premise is simple. Photograph architecture, interior design, and the app tells you what it sees: materials, structural elements, stylistic periods. You accept, reject, or add your own labels. Over time, your library becomes a personal taxonomy of the built world, organized by the descriptors that matter to you.
@@ -48,7 +48,7 @@ const Architextures = () => {
           This app is built with Apple's native frameworks ONLY: SwiftData for persistence, Vision for image classification, AVFoundation for the camera, CoreLocation for GPS, MapKit for the location experience, and UIKit and SwiftUI together for the interface.
         </p>
         <p className="text-lg leading-relaxed text-charcoal/70 mb-4">
-          All machine learning inference runs on-device through <code className="bg-charcoal/5 px-1.5 py-0.5 rounded text-sm font-mono">VNClassifyImageRequest</code>. Vision returns roughly 1,300 taxonomy identifiers with confidence scores for any given image. Most of those describe the natural world. "FloIr." "Dog." For an architecture app, that raw output is almost entirely noise.
+          All machine learning inference runs on-device through <code className="bg-charcoal/5 px-1.5 py-0.5 rounded text-sm font-mono">VNClassifyImageRequest</code>. Vision returns roughly 1,300 taxonomy identifiers with confidence scores for any given image. Most of those describe the natural world. "Floor." "Dog." For an architecture app, that raw output is almost entirely noise.
         </p>
       </div>
 
@@ -76,7 +76,7 @@ const Architextures = () => {
           The inference pipeline produces suggestions, not facts. Each Vision result that survives the mapping layer becomes a <code className="bg-charcoal/5 px-1.5 py-0.5 rounded text-sm font-mono">TagSuggestion</code>: a temporary staging object that holds the identifier, its human-readable name, its confidence score, and its proposed category. The suggestion is linked to the individual photo it was generated from. It carries no resolved tag. Its <code className="bg-charcoal/5 px-1.5 py-0.5 rounded text-sm font-mono">targetTag</code> field is nil.
         </p>
         <p className="text-lg leading-relaxed text-charcoal/70 mb-4">
-          Tags are canonical. They live in a shared library with a unique constraint on the name field. They belong to photo groups, not individual photos. A <code className="bg-charcoal/5 px-1.5 py-0.5 rounded text-sm font-mono">Tag</code> is created or reused only when the user explicitly accepts a suggestion during the save transaction. This separation betIen inference output and user-confirmed metadata is the backbone of the data architecture. It means the app never pollutes the user's library with machine-generated labels they did not choose.
+          Tags are canonical. They live in a shared library with a unique constraint on the name field. They belong to photo groups, not individual photos. A <code className="bg-charcoal/5 px-1.5 py-0.5 rounded text-sm font-mono">Tag</code> is created or reused only when the user explicitly accepts a suggestion during the save transaction. This separation between inference output and user-confirmed metadata is the backbone of the data architecture. It means the app never pollutes the user's library with machine-generated labels they did not choose.
         </p>
         <p className="text-lg leading-relaxed text-charcoal/70 mb-4">
           Unaccepted suggestions are cleaned up. Anything older than 24 hours that was never converted into a tag relationship is purged automatically by a background janitor service.

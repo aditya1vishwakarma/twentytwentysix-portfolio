@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { PROJECTS } from '../../constants';
@@ -9,7 +9,7 @@ import { ArrowRight } from 'lucide-react';
 
 // Base offsets
 const SPINE_OFFSET = 60;
-const MOBILE_SPINE_OFFSET = 40;
+const MOBILE_SPINE_OFFSET = 16; // Thinner edge on mobile
 const FAN_OUT_EXTRA = 15; // Extra pixels when an individual spine is hovered
 const CONTENT_FADE_DELAY = 0.05; // 50ms delay for content fade-in
 
@@ -17,7 +17,8 @@ const WorkCarousel: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [hoveredSpineIndex, setHoveredSpineIndex] = useState<number | null>(null);
-  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const touchStartRef = useRef<{ x: number, y: number } | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Responsive check
   useEffect(() => {
@@ -47,24 +48,55 @@ const WorkCarousel: React.FC = () => {
 
   const handleTouchStart = (e: React.TouchEvent) => {
     if (!isMobile) return;
-    setTouchStartX(e.targetTouches[0].clientX);
+    touchStartRef.current = {
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    };
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!isMobile || touchStartX === null) return;
+    if (!isMobile || !touchStartRef.current) return;
     const touchEndX = e.changedTouches[0].clientX;
-    const distance = touchStartX - touchEndX;
+    const distance = touchStartRef.current.x - touchEndX;
 
     // Swipe left (next)
     if (distance > 50) {
-      setActiveIndex((prev) => Math.min(prev + 1, Math.min(2, PROJECTS.length - 1))); 
-    } 
+      setActiveIndex((prev) => Math.min(prev + 1, Math.min(2, PROJECTS.length - 1)));
+    }
     // Swipe right (prev)
     else if (distance < -50) {
       setActiveIndex((prev) => Math.max(prev - 1, 0));
     }
-    setTouchStartX(null);
+    touchStartRef.current = null;
   };
+
+  useEffect(() => {
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isMobile || !touchStartRef.current) return;
+
+      const currentX = e.touches[0].clientX;
+      const currentY = e.touches[0].clientY;
+
+      const diffX = Math.abs(currentX - touchStartRef.current.x);
+      const diffY = Math.abs(currentY - touchStartRef.current.y);
+
+      // If mostly horizontal swipe, prevent default to avoid vertical scroll
+      if (diffX > diffY && e.cancelable) {
+        e.preventDefault();
+      }
+    };
+
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('touchmove', handleTouchMove, { passive: false });
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener('touchmove', handleTouchMove);
+      }
+    };
+  }, [isMobile]);
 
   const baseOffset = isMobile ? MOBILE_SPINE_OFFSET : SPINE_OFFSET;
 
@@ -95,8 +127,9 @@ const WorkCarousel: React.FC = () => {
 
       {/* Carousel Container */}
       <div className="relative w-full max-w-7xl mx-auto px-6 h-[650px]">
-        <div 
-          className="relative w-full h-full"
+        <div
+          ref={containerRef}
+          className="relative w-full h-full touch-pan-y"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
@@ -139,8 +172,8 @@ const WorkCarousel: React.FC = () => {
         {isMobile && (
           <div className="absolute -bottom-8 left-0 right-0 flex justify-center items-center gap-2 md:hidden">
             {PROJECTS.slice(0, 3).map((_, idx) => (
-              <button 
-                key={idx} 
+              <button
+                key={idx}
                 onClick={() => goToCard(idx)}
                 aria-label={`Go to slide ${idx + 1}`}
                 className={`h-1.5 rounded-full transition-all duration-300 ${activeIndex === idx ? 'w-8 bg-charcoal/80' : 'w-4 bg-charcoal/20 hover:bg-charcoal/40'}`}
@@ -189,20 +222,19 @@ const Card: React.FC<CardProps> = ({
   // Spine-level hover: only THIS spine fans out
   const spineWidth = isHovered && !isActive ? baseOffset + FAN_OUT_EXTRA : baseOffset;
 
-  // On desktop: accounts for ALL cards before and after it.
-  // On mobile: offsets are 0 so everything stacks and expands to 100% width
-  const stableLeftSpace = isMobile ? 0 : activeIndex * baseOffset;
-  const stableRightSpace = isMobile ? 0 : (totalCards - activeIndex - 1) * baseOffset;
+  // Both desktop and mobile: accounts for ALL cards before and after it.
+  const stableLeftSpace = activeIndex * baseOffset;
+  const stableRightSpace = (totalCards - activeIndex - 1) * baseOffset;
 
   // Background card positions
   const dynamicBehindLeftPosition = isBehindActive
-    ? (isMobile ? '0px' : `calc(100% - ${(totalCards - index) * baseOffset}px)`)
+    ? `calc(100% - ${(totalCards - index) * baseOffset}px)`
     : 'auto';
 
   // Left spines: shift left on hover so they fan OUTWARD
   const leftSpineHoverShift = isBeforeActive && isHovered ? FAN_OUT_EXTRA : 0;
   const dynamicBeforeLeftPosition = isBeforeActive
-    ? (isMobile ? '0px' : `${index * baseOffset - leftSpineHoverShift}px`)
+    ? `${index * baseOffset - leftSpineHoverShift}px`
     : 'auto';
 
   // Atmospheric perspective (NO scale change)
@@ -232,7 +264,7 @@ const Card: React.FC<CardProps> = ({
           : (isBeforeActive ? dynamicBeforeLeftPosition : dynamicBehindLeftPosition),
         width: isActive
           ? `calc(100% - ${stableLeftSpace + stableRightSpace}px)`
-          : (isMobile ? '100%' : `${spineWidth}px`),
+          : `${spineWidth}px`,
         zIndex: zIndex,
         cursor: !isActive ? 'pointer' : 'default',
       }}
@@ -296,7 +328,7 @@ const Card: React.FC<CardProps> = ({
                     to={project.path}
                     className="self-end group inline-flex items-center gap-2 text-moss font-bold uppercase text-[10px] tracking-widest hover:text-moss/80 transition-colors duration-300"
                   >
-                    Read Case Study
+                    Read More
                     <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
                   </Link>
                 </div>
