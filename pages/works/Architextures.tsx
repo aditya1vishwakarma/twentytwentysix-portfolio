@@ -21,12 +21,8 @@ const Architextures = () => {
         <OptimizedImage
           src="https://pub-9c95b4d2e81345c4a46a362747b32ea6.r2.dev/projectvideos/app%20images.jpg"
           alt="Brutalist concrete architecture"
-          className="w-full h-[50vh] md:rounded-squircle hidden md:block"
-        />
-        <OptimizedImage
-          src="https://pub-9c95b4d2e81345c4a46a362747b32ea6.r2.dev/projectvideos/app%20images.jpg"
-          alt="Brutalist concrete architecture"
-          className="w-full h-[300px] md:hidden"
+          aspectRatio="aspect-auto"
+          className="w-full h-auto md:rounded-squircle"
         />
       </div>
 

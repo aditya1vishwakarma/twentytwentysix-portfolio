@@ -9,6 +9,8 @@ const CircularScrollIndicator: React.FC = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
 
+  const [isMobile, setIsMobile] = useState(false);
+
   // Smooth the scroll progress so the circle fills organically
   const smoothProgress = useSpring(progressValue, {
     stiffness: 100,
@@ -62,13 +64,18 @@ const CircularScrollIndicator: React.FC = () => {
       }
     };
 
+    const handleResize = () => {
+      handleScroll();
+      setIsMobile(window.innerWidth < 1024);
+    };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll);
-    handleScroll();
+    window.addEventListener('resize', handleResize);
+    handleResize();
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
+      window.removeEventListener('resize', handleResize);
     };
   }, [rawBottom, progressValue]);
 
@@ -76,13 +83,13 @@ const CircularScrollIndicator: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const showText = isHovered || isFinished;
+  const showText = isMobile ? isFinished : (isHovered || isFinished);
 
   return (
     <motion.button
       onClick={handleScrollToTop}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => !isMobile && setIsHovered(true)}
+      onMouseLeave={() => !isMobile && setIsHovered(false)}
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       className={`
@@ -113,6 +120,9 @@ const CircularScrollIndicator: React.FC = () => {
 
       {/* The 40x40 circle area pinned to the right */}
       <div className="absolute right-0 top-0 w-[40px] h-[40px] flex items-center justify-center rounded-full pointer-events-none">
+        {(isMobile && !isFinished) && (
+          <ArrowUp size={16} style={{ color: 'var(--color-moss)' }} />
+        )}
 
         {/* Background track */}
         <svg width="40" height="40" viewBox="0 0 40 40" className="absolute inset-0 rotate-[-90deg]">
