@@ -1,28 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { motion as motionComponent, useScroll, useSpring, useMotionValue, useTransform } from 'framer-motion';
+import { motion as motionComponent, useSpring, useMotionValue } from 'framer-motion';
 import { ArrowUp } from 'lucide-react';
 
 const motion = motionComponent as any;
 
 const CircularScrollIndicator: React.FC = () => {
-  const { scrollYProgress } = useScroll();
+  const progressValue = useMotionValue(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
 
   // Smooth the scroll progress so the circle fills organically
-  const smoothProgress = useSpring(scrollYProgress, {
+  const smoothProgress = useSpring(progressValue, {
     stiffness: 100,
     damping: 30,
     restDelta: 0.001
   });
-
-  // Track when reading is complete
-  useEffect(() => {
-    const unsubscribe = scrollYProgress.on('change', (v: number) => {
-      setIsFinished(v >= 0.99);
-    });
-    return () => unsubscribe();
-  }, [scrollYProgress]);
 
   // Footer avoidance: use a raw motion value so scroll events never trigger React re-renders
   const rawBottom = useMotionValue(24);
@@ -34,19 +26,51 @@ const CircularScrollIndicator: React.FC = () => {
 
   useEffect(() => {
     const footer = document.querySelector('footer');
-    if (!footer) return;
 
     const handleScroll = () => {
-      const footerRect = footer.getBoundingClientRect();
-      const overlap = window.innerHeight - footerRect.top;
-      rawBottom.set(overlap > 0 ? overlap + 20 : 24);
+      // Footer avoidance logic
+      if (footer) {
+        const footerRect = footer.getBoundingClientRect();
+        const overlap = window.innerHeight - footerRect.top;
+        rawBottom.set(overlap > 0 ? overlap + 20 : 24);
+      }
+
+      // Article progress logic
+      const article = document.querySelector('article');
+      if (article) {
+        const rect = article.getBoundingClientRect();
+        const articleTop = rect.top + window.scrollY;
+        const articleHeight = rect.height;
+        const articleBottom = articleTop + articleHeight;
+
+        // Progress finishes when the bottom of the article is in view
+        const maxScroll = articleBottom - window.innerHeight;
+        if (maxScroll <= 0) {
+          progressValue.set(1);
+          setIsFinished(true);
+        } else {
+          const currentProgress = Math.min(Math.max(window.scrollY / maxScroll, 0), 1);
+          progressValue.set(currentProgress);
+          setIsFinished(currentProgress >= 0.99);
+        }
+      } else {
+        // Fallback to entire page scroll if no article element is found
+        const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const currentProgress = documentHeight > 0 ? window.scrollY / documentHeight : 1;
+        progressValue.set(currentProgress);
+        setIsFinished(currentProgress >= 0.99);
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
     handleScroll();
 
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [rawBottom]);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, [rawBottom, progressValue]);
 
   const handleScrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });

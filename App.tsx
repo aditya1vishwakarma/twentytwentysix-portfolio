@@ -18,8 +18,9 @@ import PlaceholderTwo from './pages/blog/PlaceholderTwo';
 import PlaceholderThree from './pages/blog/PlaceholderThree';
 
 // Individual Project Pages
-import AlpineRetreat from './pages/works/AlpineRetreat';
-import BotanicalBrand from './pages/works/BotanicalBrand';
+import DJXProject from './pages/works/DJXProject';
+import Architextures from './pages/works/Architextures';
+import SpacialMusic from './pages/works/SpacialMusic';
 
 const { HashRouter, Routes, Route, useLocation } = ReactRouterDOM as any;
 
@@ -68,8 +69,9 @@ const App: React.FC = () => {
           <Route path="/moodboard" element={<MoodBoardV2Page />} />
 
           {/* Project Routes */}
-          <Route path="/works/alpine-retreat" element={<AlpineRetreat />} />
-          <Route path="/works/botanical-brand" element={<BotanicalBrand />} />
+          <Route path="/works/djx-project" element={<DJXProject />} />
+          <Route path="/works/architextures" element={<Architextures />} />
+          <Route path="/works/SpacialMusic" element={<SpacialMusic />} />
 
           {/* Blog Routes */}
           <Route path="/blog/invisible-hand" element={<InvisibleHand />} />

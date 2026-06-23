@@ -3,26 +3,26 @@ import { Project, BlogPost, MoodBoardItem } from './types';
 
 export const PROJECTS: Project[] = [
   {
-    id: '1',
-    title: 'Apple Music - Spatial Album Art',
-    category: 'Exploration',
-    description: 'An exploration of what Apple Music could look like with spatial album art effects.',
-    fullDescription: 'The Alpine Retreat project focuses on minimal environmental impact while maximizing comfort. Using locally sourced timber and stone, the structure blends seamlessly into the mountainside.',
-    imageUrl: 'https://images.unsplash.com/photo-1518128958364-65859d70aa41?q=80&w=1200',
-    date: 'May 2026',
-    role: 'Product Manager',
-    path: '/works/alpine-retreat'
+    id: '2',
+    title: 'Architextures',
+    category: 'iOS Development',
+    description: 'An iOS app that photographs, classifies, and curates architecture using native platform frameworks.',
+    fullDescription: 'Architextures is my in-development iOS app that uses Apple\'s native Vision, SwiftData, AVFoundation, and MapKit frameworks to photograph and curate the world around me.',
+    imageUrl: 'https://pub-9c95b4d2e81345c4a46a362747b32ea6.r2.dev/projecthumbnails/architextures.jpg',
+    date: 'June 2026',
+    role: 'PM/ Developer',
+    path: '/works/architextures'
   },
   {
-    id: '2',
-    title: 'Keep this Vibe - DJ X',
+    id: '1',
+    title: 'Keep This Vibe, DJ X',
     category: 'Exploration',
-    description: 'Idea to Prototype to PRD for a feature that helps DJ X keep the vibe going for long listening sessions sessions.',
-    fullDescription: 'We crafted a visual identity for "Botanical" that whispers rather than shouts. The typography is elegant and understated, paired with a color palette derived from dried herbs.',
-    imageUrl: 'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?q=80&w=1200',
-    date: 'April 2026',
+    description: 'Idea to Prototype to PRD for a feature that helps DJ X keep the vibe going for long listening sessions.',
+    fullDescription: 'The DJX Project focuses on analyzing 8.7 million songs to validate a simple feature for Spotify\'s AI DJ. How I used the full PM cycle to take a personal frustration, stress-test it with data, and prototype a solution.',
+    imageUrl: 'https://pub-9c95b4d2e81345c4a46a362747b32ea6.r2.dev/projecthumbnails/djx.jpg',
+    date: 'March 2026',
     role: 'Product Manager',
-    path: '/works/botanical-brand'
+    path: '/works/djx-project'
   },
   {
     id: '3',
@@ -37,14 +37,14 @@ export const PROJECTS: Project[] = [
   },
   {
     id: '4',
-    title: 'Nordic Furniture',
-    category: 'Product Design',
-    description: 'Ergonomic seating inspired by glacial forms.',
-    fullDescription: 'This furniture collection emphasizes clean lines and functional beauty. Each piece is crafted from steam-bent ash wood.',
-    imageUrl: 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=1200',
-    date: 'Feb 2024',
-    role: 'Product Designer',
-    path: '/works/nordic-furniture'
+    title: 'Apple Music - Spacial Album Art',
+    category: 'Product Manager',
+    description: 'An attempt to bring a fully immersive artwork experience to all albums.',
+    fullDescription: 'An attempt to bring a fully immersive artwork experience to all albums.',
+    imageUrl: '',
+    date: 'April 2026',
+    role: 'Product Manager',
+    path: '/works/SpacialMusic'
   },
 ];
 

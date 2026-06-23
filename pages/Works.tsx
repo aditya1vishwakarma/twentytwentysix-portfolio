@@ -33,8 +33,7 @@ const Works: React.FC = () => {
               <motion.div
                 key={`selected-${project.id}`}
                 initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.8 }}
               >
                 <ProjectTile project={project} />

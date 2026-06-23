@@ -1,24 +1,24 @@
 # How to Rename a Writing Template
 
-If you want to duplicate or rename an existing writing template (like turning `AlpineRetreat.tsx` into `KeepVibe.tsx`), you need to update a few connection points in the React application. 
+If you want to duplicate or rename an existing writing template (like turning `DJXProject.tsx` into `KeepVibe.tsx`), you need to update a few connection points in the React application. 
 
 Follow these 4 steps:
 
 ### 1. Rename the file itself
 First, physically rename the file in your code editor or terminal.
-*Example: Change `pages/works/AlpineRetreat.tsx` to `pages/works/KeepVibe.tsx`*
+*Example: Change `pages/works/DJXProject.tsx` to `pages/works/KeepVibe.tsx`*
 
 ### 2. Update the names inside the file
 Open your newly renamed file (`KeepVibe.tsx`). You need to alter the component function name at the top, and the export statement at the bottom.
 
 ```tsx
 // Change the function name
-const KeepVibe = () => { // formerly AlpineRetreat
+const KeepVibe = () => { // formerly DJXProject
   // ... your content block
 }
 
 // Change the export at the bottom of the file
-export default KeepVibe; // formerly AlpineRetreat
+export default KeepVibe; // formerly DJXProject
 ```
 
 ### 3. Update the Routes in `App.tsx`

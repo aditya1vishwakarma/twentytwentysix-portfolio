@@ -20,7 +20,14 @@ const BlogPreview: React.FC = () => {
           </p>
         </div>
 
-        {/* Blog Cards Grid */}
+        {/* Coming Soon Placeholder */}
+        <div className="flex items-center justify-center py-20 rounded-3xl bg-white/40 border border-charcoal/5">
+          <p className="font-serif text-2xl text-charcoal/40 tracking-widest uppercase">
+            Coming Soon
+          </p>
+        </div>
+
+        {/* Blog Cards Grid - Commented out for future use
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {BLOG_POSTS.slice(0, 3).map((post, index) => (
             <motion.div
@@ -34,25 +41,20 @@ const BlogPreview: React.FC = () => {
                 <article
                   className="relative flex flex-col justify-between h-full aspect-[4/3] p-8 rounded-3xl bg-white border border-transparent transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1.0)] group-hover:scale-[1.02] group-hover:border-moss/30"
                 >
-                  {/* Content Group */}
                   <div>
-                    {/* Category */}
                     <span className="text-[11px] uppercase tracking-[0.2em] text-moss/60 font-medium mb-4 block">
                       {post.category}
                     </span>
 
-                    {/* Title */}
                     <h3 className="font-serif text-2xl text-charcoal mb-3 leading-tight group-hover:text-black transition-colors">
                       {post.title}
                     </h3>
 
-                    {/* Summary - Supporting Actor */}
                     <p className="text-charcoal/50 text-[15px] leading-relaxed line-clamp-3 font-sans">
                       {post.excerpt}
                     </p>
                   </div>
 
-                  {/* The "Path" Signifier - Glyphic Arrow */}
                   <div className="absolute bottom-8 right-8 overflow-hidden">
                     <div className="transform transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1.0)] opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0">
                       <ArrowRight strokeWidth={1.5} size={24} className="text-moss" />
@@ -63,6 +65,7 @@ const BlogPreview: React.FC = () => {
             </motion.div>
           ))}
         </div>
+        */}
 
         {/* View All - Strictly right-aligned to grid */}
         <div className="flex justify-end mt-12 border-t border-charcoal/5 pt-8">

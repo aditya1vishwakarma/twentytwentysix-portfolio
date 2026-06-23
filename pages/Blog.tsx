@@ -101,7 +101,19 @@ const Blog: React.FC = () => {
           </div>
         </div>
 
-        {/* ARTICLE LIST: FLIP Animated */}
+        {/* Coming Soon Placeholder */}
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-12 md:col-span-3" />
+          <div className="col-span-12 md:col-span-9">
+            <div className="flex items-center justify-center py-20 rounded-3xl bg-white/40 border border-charcoal/5">
+              <p className="font-serif text-2xl text-charcoal/40 tracking-widest uppercase">
+                Coming Soon
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ARTICLE LIST: FLIP Animated - Commented out for future use
         <div className="flex flex-col">
           <AnimatePresence mode="popLayout">
             {filteredPosts.map((post, index) => (
@@ -134,7 +146,6 @@ const Blog: React.FC = () => {
                     }
                   }}
                 >
-                  {/* LEFT: Metadata */}
                   <div className="shrink-0 w-full md:w-1/4">
                     <span className="text-[11px] uppercase tracking-[0.2em] text-charcoal/40 font-bold block">
                       {post.date}
@@ -144,7 +155,6 @@ const Blog: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* CENTER: Title + Blooming Excerpt */}
                   <div className="flex-1 min-w-0">
                     <motion.h2
                       className="font-serif text-3xl md:text-4xl text-charcoal leading-snug"
@@ -154,7 +164,6 @@ const Blog: React.FC = () => {
                       {post.title}
                     </motion.h2>
 
-                    {/* Blooming Excerpt */}
                     <AnimatePresence>
                       {isExpanded(post.id) && (
                         <motion.p
@@ -170,7 +179,6 @@ const Blog: React.FC = () => {
                     </AnimatePresence>
                   </div>
 
-                  {/* RIGHT: Centered Arrow */}
                   <div className="shrink-0 w-8 flex items-center justify-center">
                     <AnimatePresence>
                       {isExpanded(post.id) && (
@@ -191,6 +199,7 @@ const Blog: React.FC = () => {
             ))}
           </AnimatePresence>
         </div>
+        */}
       </div>
     </motion.div>
   );
