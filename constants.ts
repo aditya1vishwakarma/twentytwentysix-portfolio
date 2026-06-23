@@ -46,68 +46,39 @@ export const PROJECTS: Project[] = [
     role: 'Product Manager',
     path: '/works/SpacialMusic'
   },
+  {
+    id: '5',
+    title: 'Shared Memories & Captions',
+    category: 'Product Manager',
+    description: 'A preliminary idea to add collaborative captions and tags to shared albums in the native Photos app.',
+    fullDescription: 'This is a preliminary idea, but when we create memories in the native Photos app, we should be able to caption photos, tag contacts who the collection is shared with, etc. This makes it a lot more collaborative and makes it feel more like a scrapbook to be shared and is more personal than just a simple shared album.',
+    imageUrl: '',
+    date: 'June 2026',
+    role: 'Product Manager',
+    path: '/works/photo-captions'
+  },
 ];
 
 export const BLOG_POSTS: BlogPost[] = [
   {
-    id: '1',
-    title: 'The Invisible Hand of Design',
-    date: 'March 12, 2024',
-    readTime: '6 min read',
-    category: 'Philosophy',
-    excerpt: 'Exploring how the most impactful product decisions are often the ones users never explicitly notice.',
-    path: '/blog/invisible-hand',
-    content: `Design is not just what it looks like and feels like...`
-  },
-  {
     id: '2',
-    title: 'Growth as a Design Problem',
-    date: 'Feb 24, 2024',
-    readTime: '4 min read',
-    category: 'Product',
-    excerpt: 'Why sustainable growth requires a deep understanding of user aesthetics and mental models.',
-    path: '/blog/growth-as-design',
-    content: `Growth is often treated as a series of hacks...`
+    title: 'Curators are the Stewards',
+    date: 'Random Note, 2025',
+    readTime: '1 min read',
+    category: 'Random Thoughts',
+    excerpt: 'Curation is the root of ones creative prowess.',
+    path: '/blog/curation',
+    content: `Curation is really the core of all creative prowess...`
   },
   {
     id: '3',
-    title: 'Nature’s Grid Systems',
-    date: 'Jan 15, 2024',
-    readTime: '8 min read',
-    category: 'Aesthetics',
-    excerpt: 'What we can learn about layout and hierarchy from the golden ratio and organic patterns.',
-    path: '/blog/natures-grid',
-    content: `The mountains don't have a style guide...`
-  },
-  {
-    id: '4',
-    title: 'Placeholder Article One',
-    date: 'Jan 30, 2026',
-    readTime: '5 min read',
-    category: 'Design',
-    excerpt: 'This is a placeholder summary for your first new article. It will bloom beautifully on the writings index page.',
-    path: '/blog/placeholder-one',
-    content: 'Placeholder content for article one.'
-  },
-  {
-    id: '5',
-    title: 'Placeholder Article Two',
-    date: 'Jan 30, 2026',
-    readTime: '8 min read',
-    category: 'Product',
-    excerpt: 'A second placeholder summary. Notice how the category \'Product\' will allow users to filter for this post.',
-    path: '/blog/placeholder-two',
-    content: 'Placeholder content for article two.'
-  },
-  {
-    id: '6',
-    title: 'Placeholder Article Three',
-    date: 'Jan 30, 2026',
-    readTime: '12 min read',
-    category: 'Philosophy',
-    excerpt: 'The third and final placeholder. This one is tagged \'Philosophy\' to demonstrate the varied filtering categories.',
-    path: '/blog/placeholder-three',
-    content: 'Placeholder content for article three.'
+    title: 'The Curse of Nostalgia',
+    date: 'Random Note, 2025',
+    readTime: '1 min read',
+    category: 'Random Thoughts',
+    excerpt: 'Nostalgia is probably the most potent and dangerous feeling we have.',
+    path: '/blog/nostalgia',
+    content: `Nostalgia is probably the most potent and dangerous feeling we have.`
   }
 ];
 

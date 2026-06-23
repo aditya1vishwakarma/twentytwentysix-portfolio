@@ -10,17 +10,14 @@ import Navbar from './components/Layout/Navbar';
 import Footer from './components/Layout/Footer';
 
 // Individual Blog Posts
-import InvisibleHand from './pages/blog/InvisibleHand';
-import GrowthDesign from './pages/blog/GrowthDesign';
-import NatureGrid from './pages/blog/NatureGrid';
-import PlaceholderOne from './pages/blog/PlaceholderOne';
-import PlaceholderTwo from './pages/blog/PlaceholderTwo';
-import PlaceholderThree from './pages/blog/PlaceholderThree';
+import Curation from './pages/blog/Curation';
+import Nostalgia from './pages/blog/Nostalgia';
 
 // Individual Project Pages
 import DJXProject from './pages/works/DJXProject';
 import Architextures from './pages/works/Architextures';
 import SpacialMusic from './pages/works/SpacialMusic';
+import PhotoCaptions from './pages/works/PhotoCaptions';
 
 const { HashRouter, Routes, Route, useLocation } = ReactRouterDOM as any;
 
@@ -72,14 +69,11 @@ const App: React.FC = () => {
           <Route path="/works/djx-project" element={<DJXProject />} />
           <Route path="/works/architextures" element={<Architextures />} />
           <Route path="/works/SpacialMusic" element={<SpacialMusic />} />
+          <Route path="/works/photo-captions" element={<PhotoCaptions />} />
 
           {/* Blog Routes */}
-          <Route path="/blog/invisible-hand" element={<InvisibleHand />} />
-          <Route path="/blog/growth-as-design" element={<GrowthDesign />} />
-          <Route path="/blog/natures-grid" element={<NatureGrid />} />
-          <Route path="/blog/placeholder-one" element={<PlaceholderOne />} />
-          <Route path="/blog/placeholder-two" element={<PlaceholderTwo />} />
-          <Route path="/blog/placeholder-three" element={<PlaceholderThree />} />
+          <Route path="/blog/curation" element={<Curation />} />
+          <Route path="/blog/nostalgia" element={<Nostalgia />} />
         </Routes>
       </LayoutWrapper>
     </HashRouter>

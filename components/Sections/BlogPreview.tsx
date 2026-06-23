@@ -16,18 +16,10 @@ const BlogPreview: React.FC = () => {
         <div className="mb-20">
           <h2 className="font-serif text-5xl text-charcoal tracking-tight">Writings</h2>
           <p className="mt-6 text-charcoal/60 max-w-md text-lg leading-relaxed">
-            Thoughts on design, product growth, and the intersection of nature and technology.
+            Thoughts on life, design, art, music, etc. This section is still under construction!
           </p>
         </div>
-
-        {/* Coming Soon Placeholder */}
-        <div className="flex items-center justify-center py-20 rounded-3xl bg-white/40 border border-charcoal/5">
-          <p className="font-serif text-2xl text-charcoal/40 tracking-widest uppercase">
-            Coming Soon
-          </p>
-        </div>
-
-        {/* Blog Cards Grid - Commented out for future use
+        {/* Blog Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {BLOG_POSTS.slice(0, 3).map((post, index) => (
             <motion.div
@@ -65,7 +57,6 @@ const BlogPreview: React.FC = () => {
             </motion.div>
           ))}
         </div>
-        */}
 
         {/* View All - Strictly right-aligned to grid */}
         <div className="flex justify-end mt-12 border-t border-charcoal/5 pt-8">

@@ -101,19 +101,7 @@ const Blog: React.FC = () => {
           </div>
         </div>
 
-        {/* Coming Soon Placeholder */}
-        <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-12 md:col-span-3" />
-          <div className="col-span-12 md:col-span-9">
-            <div className="flex items-center justify-center py-20 rounded-3xl bg-white/40 border border-charcoal/5">
-              <p className="font-serif text-2xl text-charcoal/40 tracking-widest uppercase">
-                Coming Soon
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* ARTICLE LIST: FLIP Animated - Commented out for future use
+        {/* ARTICLE LIST: FLIP Animated */}
         <div className="flex flex-col">
           <AnimatePresence mode="popLayout">
             {filteredPosts.map((post, index) => (
@@ -199,7 +187,6 @@ const Blog: React.FC = () => {
             ))}
           </AnimatePresence>
         </div>
-        */}
       </div>
     </motion.div>
   );

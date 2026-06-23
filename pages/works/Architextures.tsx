@@ -83,13 +83,13 @@ const Architextures = () => {
       <div className="mb-16">
         <h2 className="text-3xl font-serif mb-6 text-moss">The unit of curation</h2>
         <p className="text-lg leading-relaxed text-charcoal/70 mb-4">
-          Early on, I made a structural decision that shaped everything downstream: the <code className="bg-charcoal/5 px-1.5 py-0.5 rounded text-sm font-mono">PhotoGroup</code> is the fundamental unit of the app. A single import creates one group. A multi-photo import also creates one group. The home grid, the data queries, the tag relationships, the favorites, the description: all of these live on the group, not on individual photos.
+          The core organizational tenet is the <code className="bg-charcoal/5 px-1.5 py-0.5 rounded text-sm font-mono">PhotoGroup</code>. A single import creates one group. A multi-photo import also creates one group. The home grid, the data queries, the tag relationships, the favorites, the description: all of these live on the group.
         </p>
         <p className="text-lg leading-relaxed text-charcoal/70 mb-4">
-          This means a user who photographs a building from three angles and imports those three photos gets one card in their library, one set of tags, one description, one favorite toggle. The mental model matches the real object. Three photos of the Salk Institute is one entry about the Salk Institute.
+          This means a user who photographs a building from three angles and imports those three photos gets one card in their library, one set of tags, one description, favorite toggle and map location.
         </p>
         <p className="text-lg leading-relaxed text-charcoal/70 mb-4">
-          The inference pipeline still runs per-photo (each image may surface different materials or elements), and suggestions from all photos in the group are presented together. The accepted tags land on the group. This gives you the breadth of per-image analysis with the clarity of per-subject organization.
+          The inference pipeline, however, still runs per-photo (each image may surface different materials or elements), and suggestions from all photos in the group are presented together. The accepted tags land on the group. This provides breadth of per-image analysis with the clarity of per-subject organization.
         </p>
       </div>
 
@@ -109,7 +109,7 @@ const Architextures = () => {
       <div className="mb-16">
         <h2 className="text-3xl font-serif mb-6 text-moss">The camera and deferred processing</h2>
         <p className="text-lg leading-relaxed text-charcoal/70 mb-4">
-          The capture experience prioritizes responsiveness. Zero-shutter-lag is enabled. Fast capture prioritization is on. A readiness coordinator gates the shutter button on the camera's actual ready state, so the button is honest: if you can tap it, the shot will land.
+          The capture experience prioritizes a balanced session between responsiveness and quality. Zero-shutter-lag is enabled. Fast capture prioritization is on. A readiness coordinator gates the shutter button on the camera's actual ready state, so the button is honest: if you can tap it, the shot will land.
         </p>
         <p className="text-lg leading-relaxed text-charcoal/70 mb-4">
           During a capture session, nothing else happens. No Vision inference, no thumbnail generation, no SwiftData writes. Each shot is written to a temporary file and that is all. The camera stays fast because the camera only does camera work.
@@ -123,7 +123,7 @@ const Architextures = () => {
       </div>
 
       <div className="mb-16">
-        <h2 className="text-3xl font-serif mb-6 text-moss">What I are still thinking about</h2>
+        <h2 className="text-3xl font-serif mb-6 text-moss">Coming Iterations</h2>
         <p className="text-lg leading-relaxed text-charcoal/70 mb-4">
           The Stage 3 CoreML style classifier (Art Deco, Brutalist, Mid-Century Modern) is designed in the data architecture and has a place in the pipeline. It has not been trained yet. When it arrives, it will run independently of the Vision pipeline, produce its own <code className="bg-charcoal/5 px-1.5 py-0.5 rounded text-sm font-mono">TagSuggestion</code> objects, and surface alongside the mapped results. The staging layer is already waiting for it.
         </p>

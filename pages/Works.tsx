@@ -52,7 +52,7 @@ const Works: React.FC = () => {
             <p className="text-charcoal/70 text-lg mt-1">
               These are ideas that I had for a product or feature, but upon further exploration, I found that I couldn't vouch for them for one reason or another.
               <br />
-              This reason could be design related, business related, ecosystem fit related, etc. "Focus is about saying no"
+              This reason could be design related, business related, ecosystem fit related, etc. I'm also retrofitting this to include unfleshed out ideas.
             </p>
           </header>
 
